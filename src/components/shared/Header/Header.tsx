@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import { DarkMode } from '../DarkMode';
 
 export const Header = async () => {
     return (
-        <header className="flex items-center justify-between w-full h-16 bg-blue-600 pr-8">
+        <header className="flex items-center justify-between w-full h-16 bg-blue-600 pr-8 dark:bg-blue-950">
           <div className="flex items-center text-white">
             <div className="text-xl font-bold bg-black h-16 px-8 pt-4">UNF</div>
             <nav className="hidden md:flex space-x-12 pl-12 ">
@@ -16,9 +17,7 @@ export const Header = async () => {
     
           {/* Botón Iniciar Sesión */}
           <div>
-            <button className="text-white bg-black hover:bg-blue-500 px-4 py-2 border border-white rounded-md">
-              Iniciar Sesión
-            </button>
+            <DarkMode />
           </div>
         </header>
       );
