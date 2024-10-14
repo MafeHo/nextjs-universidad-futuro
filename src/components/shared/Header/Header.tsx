@@ -5,7 +5,7 @@ export const Header = async () => {
   return (
     <>
       {/* Header for larger screens */}
-      <header className="hidden md:flex items-center justify-between w-full h-16 bg-blue-600 pr-8 dark:bg-blue-950 fixed z-10 top-0">
+      <header className="hidden md:flex items-center justify-between w-full h-16 bg-blue-600 pr-8 dark:bg-gray-900 fixed z-10 top-0">
         <div className="flex items-center text-white">
           <div className="text-xl font-bold bg-black h-16 px-8 pt-4">UNF</div>
           <nav className="hidden md:flex space-x-12 pl-12">
@@ -29,8 +29,8 @@ export const Header = async () => {
           <Link href="/login">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
+              width="30"
+              height="30"
               fill="currentColor"
               className="bi bi-person-fill"
               viewBox="0 0 16 16"
@@ -44,8 +44,8 @@ export const Header = async () => {
           <Link href="/">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
+              width="30"
+              height="30"
               fill="currentColor"
               className="bi bi-search"
               viewBox="0 0 16 16"
