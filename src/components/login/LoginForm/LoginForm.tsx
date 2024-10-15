@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const LoginForm = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-800 flex items-center justify-center pt-16">
@@ -59,7 +61,7 @@ export const LoginForm = () => {
 
         {/* Footer Text */}
         <p className="text-center text-gray-600 dark:text-gray-300 mt-4">
-          ¿Eres nuevo? <a href="#" className="text-blue-600 underline">Regístrate</a>
+          ¿Eres nuevo? <Link href="/signIn" className="text-blue-600 underline">Regístrate</Link>
           <svg className="w-4 h-4 inline-block ml-1 fill-current text-blue-600">
             <use xlinkHref="#icon-arrow-right" />
           </svg>
