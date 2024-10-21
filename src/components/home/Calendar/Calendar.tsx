@@ -91,8 +91,8 @@ export const Calendar = () => {
   }, []);
 
   return (
-    <section className="mt-72 bg-gray-900 text-white flex items-center justify-center h-96">
-      <div id="calendar" ref={calendarRef} className="w-96 h-72 overflow-hidden" />
+    <section className="mt-1 bg-gray-900 text-white flex items-center justify-center h-80 md:h-96  md:w-96 rounded">
+      <div id="calendar" ref={calendarRef} className="w-80 md:w-[550px] h-[265px] md:h-[350px]  p-3 md:p-5" />
     </section>
   );
 };
