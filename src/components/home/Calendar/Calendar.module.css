@@ -1,0 +1,30 @@
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.month {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-gap: 10px;
+}
+
+.day {
+  background-color: #2d2d2d;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.today {
+  background-color: #4caf50;
+}
+
+.day-number {
+  font-size: 18px;
+  font-weight: bold;
+}
+
