@@ -69,8 +69,8 @@ export const SignInForm = () => {
               Selecciona tu rol
             </option>
             <option value="admin">Administrador</option>
-            <option value="estudiante">Estudiante</option>
-            <option value="profe">Profesor</option>
+            <option value="estudiante">Participante</option>
+            <option value="profe">Organizador</option>
           </select>
 
           {/* Contraseña Field */}
