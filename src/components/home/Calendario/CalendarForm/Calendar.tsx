@@ -21,7 +21,17 @@ import {
 const Calendar: React.FC = () => {
   const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [newEventTitle, setNewEventTitle] = useState<string>("");
+  const [newEvent, setNewEvent] = useState({
+    title: "",
+    organizer: "",
+    faculty: "",
+    topic: "",
+    eventType: "",
+    startTime: "",
+    endTime: "",
+    maxCapacity: "",
+    attendees: "",
+  });
   const [selectedDate, setSelectedDate] = useState<DateSelectArg | null>(null);
   const [calendarView, setCalendarView] = useState<string>("dayGridMonth");
 
@@ -60,24 +70,48 @@ const Calendar: React.FC = () => {
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
-    setNewEventTitle("");
+    setNewEvent({
+      title: "",
+      organizer: "",
+      faculty: "",
+      topic: "",
+      eventType: "",
+      startTime: "",
+      endTime: "",
+      maxCapacity: "",
+      attendees: "",
+    });
   };
 
   const handleAddEvent = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newEventTitle && selectedDate) {
+    if (newEvent.title && selectedDate) {
       const calendarApi = selectedDate.view.calendar;
       calendarApi.unselect();
 
-      const newEvent = {
-        id: `${selectedDate.start.toISOString()}-${newEventTitle}`,
-        title: newEventTitle,
-        start: selectedDate.start,
-        end: selectedDate.end,
-        allDay: selectedDate.allDay,
+      // Obtener las fechas de inicio y fin con las horas especificadas en el formulario
+      const startDateTime = new Date(selectedDate.start);
+      const [startHour, startMinute] = newEvent.startTime.split(":").map(Number);
+      startDateTime.setHours(startHour, startMinute);
+
+      const endDateTime = new Date(selectedDate.start);
+      const [endHour, endMinute] = newEvent.endTime.split(":").map(Number);
+      endDateTime.setHours(endHour, endMinute);
+
+      const newCalendarEvent = {
+        id: `${startDateTime.toISOString()}-${newEvent.title}`,
+        title: newEvent.title,
+        start: startDateTime,
+        end: endDateTime,
+        allDay: false,
+        organizer: newEvent.organizer,
+        faculty: newEvent.faculty,
+        topic: newEvent.topic,
+        eventType: newEvent.eventType,
+        maxCapacity: newEvent.maxCapacity,
       };
 
-      calendarApi.addEvent(newEvent);
+      calendarApi.addEvent(newCalendarEvent);
       handleCloseDialog();
     }
   };
@@ -190,7 +224,16 @@ const Calendar: React.FC = () => {
                   className="border border-gray-200 shadow px-4 py-2 rounded-md text-blue-800"
                   key={event.id}
                 >
-                  {event.title}
+                  <div className="font-bold">{event.title}</div>
+                  <div className="text-sm text-slate-700">
+                    <p>Organizador: {event.extendedProps.organizer}</p>
+                    <p>Facultad: {event.extendedProps.faculty}</p>
+                    <p>Temática: {event.extendedProps.topic}</p>
+                    <p>Tipo de Evento: {event.extendedProps.eventType}</p>
+                    <p>Hora Inicio: {formatDate(event.start!, { hour: 'numeric', minute: 'numeric', hour12: false })}</p>
+                    <p>Hora Fin: {formatDate(event.end!, { hour: 'numeric', minute: 'numeric', hour12: false })}</p>
+                    <p>Cupos Máximos: {event.extendedProps.maxCapacity}</p>
+                </div>
                   <br />
                   <label className="text-slate-950">
                     {formatDate(event.start!, {
@@ -207,24 +250,103 @@ const Calendar: React.FC = () => {
 
       {/* Dialog for adding new events */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[550px] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Add New Event Details</DialogTitle>
+            <DialogTitle>Crear Evento</DialogTitle>
           </DialogHeader>
           <form className="space-y-4" onSubmit={handleAddEvent}>
-            <input
-              type="text"
-              placeholder="Event Title"
-              value={newEventTitle}
-              onChange={(e) => setNewEventTitle(e.target.value)}
-              required
-              className="w-full border border-gray-200 p-3 rounded-md text-lg"
+          <div className="mt-4">
+              <label className="block text-lg font-medium">Título</label>
+              <input
+                type="text"
+                value={newEvent.title}
+                onChange={(e) => setNewEvent((prev) => ({ ...prev, title: e.target.value }))}
+                required
+                className="w-full border border-gray-200 p-3 rounded-md text-lg"
             />
+            </div>
+            <div className="mt-4">
+              <label className="block text-lg font-medium">Organizador</label>
+              <input
+                type="text"
+                value={newEvent.organizer}
+                onChange={(e) =>
+                  setNewEvent((prev) => ({ ...prev, organizer: e.target.value }))
+                }
+                className="w-full border border-gray-200 p-3 rounded-md"
+            />
+            </div>
+            <label className="block text-lg font-medium">Facultad</label>
+            <select
+              value={newEvent.faculty}
+              onChange={(e) => setNewEvent((prev) => ({ ...prev, faculty: e.target.value }))}
+              className="w-full border border-gray-200 p-3 rounded-md"
+            >
+              <option value="">Seleccione una facultad</option>
+              <option value="Ciencias">Ciencias</option>
+              <option value="Ingeniería">Ingeniería</option>
+              <option value="Humanidades">Humanidades</option>
+            </select>
+            <label className="block text-lg font-medium mt-4">Temática</label>
+            <select
+              value={newEvent.topic}
+              onChange={(e) => setNewEvent((prev) => ({ ...prev, topic: e.target.value }))}
+              className="w-full border border-gray-200 p-3 rounded-md"
+            >
+              <option value="">Seleccione una temática</option>
+              <option value="Academico">Académico</option>
+              <option value="Cultural">Cultural</option>
+            </select>
+
+            <label className="block text-lg font-medium mt-4">Tipo de Evento</label>
+            <select
+              value={newEvent.eventType}
+              onChange={(e) => setNewEvent((prev) => ({ ...prev, eventType: e.target.value }))}
+              className="w-full border border-gray-200 p-3 rounded-md"
+            >
+              <option value="">Seleccione el tipo de evento</option>
+              <option value="Seminario">Seminario</option>
+              <option value="Taller">Taller</option>
+              <option value="Conferencia">Conferencia</option>
+            </select>
+            {/* Hora de inicio y fin */}
+            <div className="mt-4">
+              <label className="block text-lg font-medium">Hora de Inicio</label>
+              <input
+                type="time"
+                value={newEvent.startTime}
+                onChange={(e) => setNewEvent((prev) => ({ ...prev, startTime: e.target.value }))}
+                required
+                className="w-full border border-gray-200 p-3 rounded-md"
+              />
+            </div>
+
+            <div className="mt-4">
+              <label className="block text-lg font-medium">Hora de Fin</label>
+              <input
+                type="time"
+                value={newEvent.endTime}
+                onChange={(e) => setNewEvent((prev) => ({ ...prev, endTime: e.target.value }))}
+                required
+                className="w-full border border-gray-200 p-3 rounded-md"
+              />
+            </div>
+            {/* Cupos máximos*/}
+            <div className="mt-4">
+              <label className="block text-lg font-medium">Cupos Máximos</label>
+              <input
+                type="number"
+                value={newEvent.maxCapacity}
+                onChange={(e) => setNewEvent((prev) => ({ ...prev, maxCapacity: e.target.value }))}
+                required
+                className="w-full border border-gray-200 p-3 rounded-md"
+              />
+            </div>
             <button
               className="w-full bg-green-500 text-white p-3 rounded-md"
               type="submit"
             >
-              Add
+              Crear
             </button>
           </form>
         </DialogContent>

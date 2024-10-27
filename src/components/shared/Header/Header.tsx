@@ -5,7 +5,7 @@ export const Header = async () => {
   return (
     <>
       {/* Header for larger screens */}
-      <header className="hidden md:flex items-center justify-between w-full h-16 bg-blue-600 pr-8 dark:bg-gray-900 fixed z-10 top-0">
+      <header className="hidden md:flex items-center justify-between w-full h-16 bg-blue-600 pr-8 dark:bg-gray-900 fixed z-50 top-0">
         <div className="flex items-center text-white">
           <div className="text-xl font-bold bg-black dark:bg-gray-700 h-16 px-8 pt-4">UNF</div>
           <nav className="hidden md:flex space-x-12 pl-12">
