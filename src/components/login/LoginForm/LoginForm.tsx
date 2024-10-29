@@ -4,9 +4,9 @@ export const LoginForm = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-800 flex items-center justify-center pt-16">
       <div className="w-11/12 max-w-sm mx-auto">
-        <form 
-          action="https://httpbin.org/post" 
-          method="POST" 
+        <form
+          action="https://httpbin.org/post"
+          method="POST"
           className="grid gap-4 bg-blue-600 pr-8 dark:bg-gray-900 p-8 rounded-md shadow-lg"
         >
           {/* Header Text */}
