@@ -1,5 +1,7 @@
 import Image from "next/image";
-import Calendar from "../components/home/Calendar/Calendar"; // Asegúrate de que la ruta sea correcta
+//import Calendar from "../components/home/Calendar/Calendar"; // Asegúrate de que la ruta sea correcta
+//import { Calendar } from "@fullcalendar/core/index.js";
+
 
 export default function Home() {
   return (
@@ -19,12 +21,12 @@ export default function Home() {
       {/* Asegura espacio para el Header */}
       <div className="pt-20"> {/* Ajusta 20 según la altura del header */}
         {/* Contenedor del calendario */}
-        <div className="relative top-10 left-1/2 transform -translate-x-1/2 w-80 z-10 p-1 sm:p-0 md:p-">
+        {/* <div className="relative top-10 left-1/2 transform -translate-x-1/2 w-80 z-10 p-1 sm:p-0 md:p-">
           <Calendar />
-        </div>
+        </div> */}
 
         {/* Contenedor de los filtros */}
-        <div className="relative top-12 left-1/2 transform -translate-x-1/2 w-64 h-auto p-4 bg-gray-800 bg-opacity-90 rounded-md z-20 ">
+        <div className="relative top-12 left-1/2 transform -translate-x-1/2 w-64 h-auto p-4 bg-gray-800 bg-opacity-90 rounded-md  ">
           <h2 className="text-white text-lg font-semibold mb-4 text-center">
             Filtros
           </h2>
@@ -41,6 +43,8 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      
     </div>
   );
 }
