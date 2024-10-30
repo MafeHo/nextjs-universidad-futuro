@@ -42,9 +42,29 @@ const getRole = async (roleId: string) => {
     }
 }
 
+
+const getRoleIdByName = async (role: string): Promise<string> => {
+    try {
+        const response = await axios.get(
+            SECURITY_URL +
+                `rol?filter={"fields":["nombre", "_id"], "where": {"nombre": "${role}"}}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        console.error('Error getting role:', error)
+        throw error
+    }
+}
+
 const UserService = {
     register,
-    getRole,
+    getRoleIdByName,
 }
 
 export default UserService
