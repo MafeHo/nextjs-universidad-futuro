@@ -137,8 +137,8 @@ const Calendar: React.FC = () => {
 
   return (
     <div className="pt-20 pl-5 pr-5">
-      <div className="flex flex-col lg:flex-row gap-8 ">
-        <div className="lg:w-2/3 w-full">
+      <div className="flex flex-col lg:flex-row gap-8">
+        <div className="lg:w-2/3 w-full m-2">
           {/* FullCalendar Component */}
           <FullCalendar
             ref={calendarRef}
@@ -210,7 +210,7 @@ const Calendar: React.FC = () => {
           </div>
         </div>
 
-        <div className="lg:w-1/3 w-full mb-4 lg:mb-0 ">
+        <div className="lg:w-1/3 w-auto mb-4 lg:mb-0 ">
           <div className="lg:mt-5 lg:mb-14">
             <Filtro />
           </div>
