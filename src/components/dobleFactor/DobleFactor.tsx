@@ -57,51 +57,55 @@ export const DobleFactor = () => {
   };
 
   return (
-    <section className="flex flex-col items-center min-h-screen bg-gray-100">
-      <div className="py-8">
-        <h1 className="text-2xl font-bold text-gray-800">Código de verificación</h1>
-        <p className="text-gray-600 mt-2">Ingresa el código que te enviamos al correo electrónico</p>
-      </div>
-      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
-        <div className="flex justify-center space-x-2 mb-4">
-          <input
-            ref={digit1Ref}
-            type="text"
-            maxLength={1}
-            className="digit-input w-12 h-14 text-center border border-purple-600 rounded-lg text-lg"
-            onChange={(e) => onDigitInput(1, e)}
-          />
-          <input
-            ref={digit2Ref}
-            type="text"
-            maxLength={1}
-            className="digit-input w-12 h-14 text-center border border-purple-600 rounded-lg text-lg"
-            onChange={(e) => onDigitInput(2, e)}
-          />
-          <input
-            ref={digit3Ref}
-            type="text"
-            maxLength={1}
-            className="digit-input w-12 h-14 text-center border border-purple-600 rounded-lg text-lg"
-            onChange={(e) => onDigitInput(3, e)}
-          />
-          <input
-            ref={digit4Ref}
-            type="text"
-            maxLength={1}
-            className="digit-input w-12 h-14 text-center border border-purple-600 rounded-lg text-lg"
-            onChange={(e) => onDigitInput(4, e)}
-          />
+    <div className="min-h-screen bg-white dark:bg-gray-800 flex items-center justify-center pt-16">
+      <div className="w-11/12 max-w-sm mx-auto">
+        <div className="grid gap-4 bg-blue-600 pr-8 dark:bg-gray-900 p-8 rounded-md shadow-lg">
+          <h2 className="text-center text-2xl font-bold text-white dark:text-gray-300 mb-6">
+            Código de Verificación
+          </h2>
+          <p className="text-center text-white dark:text-gray-400 mb-4">
+            Ingresa el código que te enviamos al correo electrónico
+          </p>
+          <div className="flex justify-center space-x-2 mb-4">
+            <input
+              ref={digit1Ref}
+              type="text"
+              maxLength={1}
+              className="w-12 h-14 text-center border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white text-lg"
+              onChange={(e) => onDigitInput(1, e)}
+            />
+            <input
+              ref={digit2Ref}
+              type="text"
+              maxLength={1}
+              className="w-12 h-14 text-center border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white text-lg"
+              onChange={(e) => onDigitInput(2, e)}
+            />
+            <input
+              ref={digit3Ref}
+              type="text"
+              maxLength={1}
+              className="w-12 h-14 text-center border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white text-lg"
+              onChange={(e) => onDigitInput(3, e)}
+            />
+            <input
+              ref={digit4Ref}
+              type="text"
+              maxLength={1}
+              className="w-12 h-14 text-center border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white text-lg"
+              onChange={(e) => onDigitInput(4, e)}
+            />
+          </div>
+          <button
+            onClick={verifyCode}
+            className="w-full p-4 bg-gray-800 dark:bg-blue-600 hover:bg-gray-700 dark:hover:bg-blue-500 text-white font-bold uppercase rounded-md cursor-pointer transition"
+          >
+            Enviar
+          </button>
+          {code && <p className="text-center mt-4 text-white dark:text-gray-300">Código ingresado: {code}</p>}
         </div>
-        <button
-          onClick={verifyCode}
-          className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          Enviar
-        </button>
-        {code && <p className="text-center mt-4">Código ingresado: {code}</p>}
       </div>
-    </section>
+    </div>
   );
 };
 
