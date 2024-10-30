@@ -26,7 +26,7 @@ export default function Home() {
         </div> */}
 
         {/* Contenedor de los filtros */}
-        <div className="relative top-12 left-1/2 transform -translate-x-1/2 w-64 h-auto p-4 bg-gray-800 bg-opacity-90 rounded-md z-20 ">
+        <div className="relative top-12 left-1/2 transform -translate-x-1/2 w-64 h-auto p-4 bg-gray-800 bg-opacity-90 rounded-md  ">
           <h2 className="text-white text-lg font-semibold mb-4 text-center">
             Filtros
           </h2>
