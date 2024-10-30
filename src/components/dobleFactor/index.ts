@@ -1,0 +1,1 @@
+export { DobleFactor } from "./DobleFactor";
