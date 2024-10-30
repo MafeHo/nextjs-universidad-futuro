@@ -32,7 +32,7 @@ export const SignInForm = () => {
         })
     }
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (formData.clave !== formData.confirmarClave) {
             setError('Las contraseñas no coinciden')
@@ -41,12 +41,7 @@ export const SignInForm = () => {
         setError('')
         // Aquí puedes manejar el envío del formulario
 
-        let rolId = SecurityConfig.ID_ROLE_PARTICIPANT
-        if (rol == PARTICIPANTE) {
-            rolId = SecurityConfig.ID_ROLE_PARTICIPANT
-        } else if (rol == ORGANIZADOR) {
-            rolId = SecurityConfig.ID_ROLE_ORGANIZER
-        }
+        let rolId = await UserService.getRoleIdByName(rol)
 
         const user = {
             primerNombre: formData.primerNombre,
