@@ -17,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../../ui/dialog";
+import { Filtro } from "app/components/filtros";
 
 const Calendar: React.FC = () => {
   const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
@@ -207,7 +208,11 @@ const Calendar: React.FC = () => {
           </div>
         </div>
 
-        <div className="lg:w-1/3 w-full mb-4 lg:mb-0">
+        <div className="lg:mt-5">
+          <Filtro/>
+        </div>
+
+        <div className="lg:w-1/3 w-full mb-4 lg:mb-0 lg:-mt-5">
           <div className="text-2xl font-extrabold px-4 py-6">
             Calendar Events
           </div>
