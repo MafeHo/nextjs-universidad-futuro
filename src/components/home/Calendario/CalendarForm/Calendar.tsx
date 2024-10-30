@@ -92,7 +92,9 @@ const Calendar: React.FC = () => {
 
       // Obtener las fechas de inicio y fin con las horas especificadas en el formulario
       const startDateTime = new Date(selectedDate.start);
-      const [startHour, startMinute] = newEvent.startTime.split(":").map(Number);
+      const [startHour, startMinute] = newEvent.startTime
+        .split(":")
+        .map(Number);
       startDateTime.setHours(startHour, startMinute);
 
       const endDateTime = new Date(selectedDate.start);
@@ -208,11 +210,10 @@ const Calendar: React.FC = () => {
           </div>
         </div>
 
-        <div className="lg:mt-5">
-          <Filtro/>
-        </div>
-
-        <div className="lg:w-1/3 w-full mb-4 lg:mb-0 lg:-mt-5">
+        <div className="lg:w-1/3 w-full mb-4 lg:mb-0 ">
+          <div className="lg:mt-5 lg:mb-14">
+            <Filtro />
+          </div>
           <div className="text-2xl font-extrabold px-4 py-6">
             Calendar Events
           </div>
@@ -235,10 +236,24 @@ const Calendar: React.FC = () => {
                     <p>Facultad: {event.extendedProps.faculty}</p>
                     <p>Temática: {event.extendedProps.topic}</p>
                     <p>Tipo de Evento: {event.extendedProps.eventType}</p>
-                    <p>Hora Inicio: {formatDate(event.start!, { hour: 'numeric', minute: 'numeric', hour12: false })}</p>
-                    <p>Hora Fin: {formatDate(event.end!, { hour: 'numeric', minute: 'numeric', hour12: false })}</p>
+                    <p>
+                      Hora Inicio:{" "}
+                      {formatDate(event.start!, {
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: false,
+                      })}
+                    </p>
+                    <p>
+                      Hora Fin:{" "}
+                      {formatDate(event.end!, {
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: false,
+                      })}
+                    </p>
                     <p>Cupos Máximos: {event.extendedProps.maxCapacity}</p>
-                </div>
+                  </div>
                   <br />
                   <label className="text-slate-950">
                     {formatDate(event.start!, {
@@ -260,15 +275,17 @@ const Calendar: React.FC = () => {
             <DialogTitle>Crear Evento</DialogTitle>
           </DialogHeader>
           <form className="space-y-4" onSubmit={handleAddEvent}>
-          <div className="mt-4">
+            <div className="mt-4">
               <label className="block text-lg font-medium">Título</label>
               <input
                 type="text"
                 value={newEvent.title}
-                onChange={(e) => setNewEvent((prev) => ({ ...prev, title: e.target.value }))}
+                onChange={(e) =>
+                  setNewEvent((prev) => ({ ...prev, title: e.target.value }))
+                }
                 required
                 className="w-full border border-gray-200 p-3 rounded-md text-lg"
-            />
+              />
             </div>
             <div className="mt-4">
               <label className="block text-lg font-medium">Organizador</label>
@@ -276,15 +293,20 @@ const Calendar: React.FC = () => {
                 type="text"
                 value={newEvent.organizer}
                 onChange={(e) =>
-                  setNewEvent((prev) => ({ ...prev, organizer: e.target.value }))
+                  setNewEvent((prev) => ({
+                    ...prev,
+                    organizer: e.target.value,
+                  }))
                 }
                 className="w-full border border-gray-200 p-3 rounded-md"
-            />
+              />
             </div>
             <label className="block text-lg font-medium">Facultad</label>
             <select
               value={newEvent.faculty}
-              onChange={(e) => setNewEvent((prev) => ({ ...prev, faculty: e.target.value }))}
+              onChange={(e) =>
+                setNewEvent((prev) => ({ ...prev, faculty: e.target.value }))
+              }
               className="w-full border border-gray-200 p-3 rounded-md"
             >
               <option value="">Seleccione una facultad</option>
@@ -295,7 +317,9 @@ const Calendar: React.FC = () => {
             <label className="block text-lg font-medium mt-4">Temática</label>
             <select
               value={newEvent.topic}
-              onChange={(e) => setNewEvent((prev) => ({ ...prev, topic: e.target.value }))}
+              onChange={(e) =>
+                setNewEvent((prev) => ({ ...prev, topic: e.target.value }))
+              }
               className="w-full border border-gray-200 p-3 rounded-md"
             >
               <option value="">Seleccione una temática</option>
@@ -303,10 +327,14 @@ const Calendar: React.FC = () => {
               <option value="Cultural">Cultural</option>
             </select>
 
-            <label className="block text-lg font-medium mt-4">Tipo de Evento</label>
+            <label className="block text-lg font-medium mt-4">
+              Tipo de Evento
+            </label>
             <select
               value={newEvent.eventType}
-              onChange={(e) => setNewEvent((prev) => ({ ...prev, eventType: e.target.value }))}
+              onChange={(e) =>
+                setNewEvent((prev) => ({ ...prev, eventType: e.target.value }))
+              }
               className="w-full border border-gray-200 p-3 rounded-md"
             >
               <option value="">Seleccione el tipo de evento</option>
@@ -316,11 +344,18 @@ const Calendar: React.FC = () => {
             </select>
             {/* Hora de inicio y fin */}
             <div className="mt-4">
-              <label className="block text-lg font-medium">Hora de Inicio</label>
+              <label className="block text-lg font-medium">
+                Hora de Inicio
+              </label>
               <input
                 type="time"
                 value={newEvent.startTime}
-                onChange={(e) => setNewEvent((prev) => ({ ...prev, startTime: e.target.value }))}
+                onChange={(e) =>
+                  setNewEvent((prev) => ({
+                    ...prev,
+                    startTime: e.target.value,
+                  }))
+                }
                 required
                 className="w-full border border-gray-200 p-3 rounded-md"
               />
@@ -331,7 +366,9 @@ const Calendar: React.FC = () => {
               <input
                 type="time"
                 value={newEvent.endTime}
-                onChange={(e) => setNewEvent((prev) => ({ ...prev, endTime: e.target.value }))}
+                onChange={(e) =>
+                  setNewEvent((prev) => ({ ...prev, endTime: e.target.value }))
+                }
                 required
                 className="w-full border border-gray-200 p-3 rounded-md"
               />
@@ -342,7 +379,12 @@ const Calendar: React.FC = () => {
               <input
                 type="number"
                 value={newEvent.maxCapacity}
-                onChange={(e) => setNewEvent((prev) => ({ ...prev, maxCapacity: e.target.value }))}
+                onChange={(e) =>
+                  setNewEvent((prev) => ({
+                    ...prev,
+                    maxCapacity: e.target.value,
+                  }))
+                }
                 required
                 className="w-full border border-gray-200 p-3 rounded-md"
               />
