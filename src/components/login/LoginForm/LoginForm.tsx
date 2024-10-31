@@ -36,7 +36,7 @@ export const LoginForm = () => {
               name="email"
               placeholder="Correo Electrónico"
               required
-              className="w-full p-4 bg-transparent outline-none text-white placeholder-gray-400"
+              className="w-full p-4 bg-transparent outline-none text-gray-400 placeholder-gray-400"
             />
           </div>
 
@@ -52,7 +52,7 @@ export const LoginForm = () => {
               name="password"
               placeholder="Contraseña"
               required
-              className="w-full p-4 bg-transparent outline-none text-white placeholder-gray-400"
+              className="w-full p-4 bg-transparent outline-none text-gray-400 placeholder-gray-400"
             />
           </div>
 

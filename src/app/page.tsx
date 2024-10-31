@@ -1,9 +1,15 @@
-import Image from "next/image";
-//import Calendar from "../components/home/Calendar/Calendar"; // Asegúrate de que la ruta sea correcta
-//import { Calendar } from "@fullcalendar/core/index.js";
+"use client";
 
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleButtonClick = () => {
+    router.push("/calendario");
+  };
+
   return (
     <div className="relative w-full min-h-screen">
       {/* Imagen de fondo */}
@@ -18,18 +24,15 @@ export default function Home() {
         />
       </div>
 
-      {/* Asegura espacio para el Header */}
-      <div className="pt-20"> {/* Ajusta 20 según la altura del header */}
-        {/* Contenedor del calendario */}
-        {/* <div className="relative top-10 left-1/2 transform -translate-x-1/2 w-80 z-10 p-1 sm:p-0 md:p-">
-          <Calendar />
-        </div> */}
-
-        {/* Contenedor de los filtros */}
-        
+      {/* Botón centrado */}
+      <div className="flex justify-center items-center w-full absolute top-1/4">
+        <button
+          onClick={handleButtonClick}
+          className="px-6 py-3 bg-blue-600 dark:bg-gray-900 text-white font-semibold text-lg rounded-lg shadow-lg hover:bg-blue-700 transition"
+        >
+          ¡Explora eventos!
+        </button>
       </div>
-
-      
     </div>
   );
 }

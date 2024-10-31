@@ -2,8 +2,10 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // Importa useRouter
 
 export const DobleFactor = () => {
+  const router = useRouter(); // Define router
   const digit1Ref = useRef<HTMLInputElement>(null);
   const digit2Ref = useRef<HTMLInputElement>(null);
   const digit3Ref = useRef<HTMLInputElement>(null);
@@ -53,7 +55,10 @@ export const DobleFactor = () => {
 
     setCode(codeEntered);
     console.log("Código ingresado:", codeEntered);
+
     // Aquí podrías agregar la lógica de verificación del código
+    // Redirige al usuario a la página de inicio después de verificar
+    router.push("/"); // Redirecciona a la página de inicio
   };
 
   return (
@@ -110,3 +115,4 @@ export const DobleFactor = () => {
 };
 
 export default DobleFactor;
+

@@ -9,12 +9,20 @@ export const Filtro = () => {
       <div className="flex flex-col gap-4">
         <select className="dark:bg-gray-700 p-2 rounded border-2">
           <option>Facultad</option>
+          <option value="Ciencias">Ciencias</option>
+          <option value="Ingeniería">Ingeniería</option>
+          <option value="Humanidades">Humanidades</option>
         </select>
         <select className="dark:bg-gray-700 p-2 rounded border-2">
           <option>Tipo Evento</option>
+              <option value="Seminario">Seminario</option>
+              <option value="Taller">Taller</option>
+              <option value="Conferencia">Conferencia</option>
         </select>
         <select className="dark:bg-gray-700 p-2 rounded border-2">
           <option>Temática</option>
+          <option value="Academico">Académico</option>
+          <option value="Cultural">Cultural</option>
         </select>
         <div className="flex">
           <button className="dark:bg-gray-700 bg-blue-600 font-semibold text-white hover:bg-blue-500 p-2 rounded border-2 w-full mr-2">

@@ -137,11 +137,11 @@ const Calendar: React.FC = () => {
   };
 
   return (
-    <div className="pt-20 pl-5 pr-5">
+    <div className="pt-20 pl-5 pr-5 bg-white dark:bg-gray-800 min-h-screen">
       <div className="flex flex-col lg:flex-row gap-8 ">
         <div className="lg:w-2/3 w-full">
           {/* FullCalendar Component */}
-        <div className="bg-white dark:bg-gray-800">
+       
           <FullCalendar
             ref={calendarRef}
             height={"75vh"}
@@ -167,7 +167,7 @@ const Calendar: React.FC = () => {
             locale="es"
             themeSystem="standard" // Agrega esto
           />
-        </div>
+       
           {/* Custom View Buttons */}
           <div className="flex justify-between mt-4">
             <div>
@@ -220,7 +220,7 @@ const Calendar: React.FC = () => {
 
         <div className="lg:w-1/3 w-full mb-4 lg:mb-0 lg:-mt-5">
           <div className="text-2xl font-extrabold px-4 py-6">
-            Calendar Events
+            Eventos
           </div>
           <ul className="space-y-4 px-4">
             {currentEvents.length <= 0 && (
@@ -289,7 +289,7 @@ const Calendar: React.FC = () => {
                   setNewEvent((prev) => ({ ...prev, title: e.target.value }))
                 }
                 required
-                className="w-full border border-gray-200 p-3 rounded-md text-lg"
+                className="w-full border border-gray-200 p-3 rounded-md text-lg dark:text-gray-400 bg-white dark:bg-gray-700"
             />
             </div>
             <div className="mt-4">
@@ -303,14 +303,14 @@ const Calendar: React.FC = () => {
                     organizer: e.target.value,
                   }))
                 }
-                className="w-full border border-gray-200 p-3 rounded-md"
+                className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
             />
             </div>
             <label className="block text-lg font-medium">Facultad</label>
             <select
               value={newEvent.faculty}
               onChange={(e) => setNewEvent((prev) => ({ ...prev, faculty: e.target.value }))}
-              className="w-full border border-gray-200 p-3 rounded-md"
+              className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
             >
               <option value="">Seleccione una facultad</option>
               <option value="Ciencias">Ciencias</option>
@@ -321,7 +321,7 @@ const Calendar: React.FC = () => {
             <select
               value={newEvent.topic}
               onChange={(e) => setNewEvent((prev) => ({ ...prev, topic: e.target.value }))}
-              className="w-full border border-gray-200 p-3 rounded-md"
+              className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
             >
               <option value="">Seleccione una temática</option>
               <option value="Academico">Académico</option>
@@ -334,7 +334,7 @@ const Calendar: React.FC = () => {
             <select
               value={newEvent.eventType}
               onChange={(e) => setNewEvent((prev) => ({ ...prev, eventType: e.target.value }))}
-              className="w-full border border-gray-200 p-3 rounded-md"
+              className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
             >
               <option value="">Seleccione el tipo de evento</option>
               <option value="Seminario">Seminario</option>
@@ -389,7 +389,7 @@ const Calendar: React.FC = () => {
               />
             </div>
             <button
-              className="w-full dark:bg-blue-600 dark:hover:bg-blue-500 text-white p-3 rounded-md"
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-md"
               type="submit"
             >
               Crear
