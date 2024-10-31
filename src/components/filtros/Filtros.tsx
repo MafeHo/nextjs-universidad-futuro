@@ -25,10 +25,10 @@ export const Filtro = () => {
           <option value="Cultural">Cultural</option>
         </select>
         <div className="flex">
-          <button className="dark:bg-gray-700 bg-blue-600 font-semibold text-white hover:bg-blue-500 p-2 rounded border-2 w-full mr-2">
+          <button className="dark:bg-blue-900 dark:hover:bg-blue-800 bg-blue-600 font-semibold text-white hover:bg-blue-500 p-2 rounded border-2 w-full mr-2">
             Filtrar
           </button>
-          <button className="dark:bg-gray-700 p-2 rounded border-2 w-full ml-2 text-white font-semibold bg-gray-600 hover:bg-gray-500">
+          <button className="dark:bg-gray-700 dark:hover:bg-gray-600 p-2 rounded border-2 w-full ml-2 text-white font-semibold bg-gray-600 hover:bg-gray-500">
             Limpiar
           </button>
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Card from "app/components/home/Cards/Cards";
 import {
   formatDate,
   DateSelectArg,
@@ -17,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../../ui/dialog";
-import esLocale from '@fullcalendar/core/locales/es'; // Importa el idioma español
+//import esLocale from '@fullcalendar/core/locales/es'; // Importa el idioma español
 import { Filtro } from "app/components/filtros";
 
 const Calendar: React.FC = () => {
@@ -141,7 +142,7 @@ const Calendar: React.FC = () => {
       <div className="flex flex-col lg:flex-row gap-8 ">
         <div className="lg:w-2/3 w-full">
           {/* FullCalendar Component */}
-       
+
           <FullCalendar
             ref={calendarRef}
             height={"75vh"}
@@ -167,7 +168,28 @@ const Calendar: React.FC = () => {
             locale="es"
             themeSystem="standard" // Agrega esto
           />
-       
+
+          <Card
+            events={currentEvents.map((event) => ({
+              title: event.title,
+              organizer: event.extendedProps.organizer,
+              faculty: event.extendedProps.faculty,
+              topic: event.extendedProps.topic,
+              eventType: event.extendedProps.eventType,
+              start: event.start ? formatDate(event.start, {
+                hour: "numeric",
+                minute: "numeric",
+                hour12: false,
+              }) : '',
+              end: event.end ? formatDate(event.end, {
+                hour: "numeric",
+                minute: "numeric",
+                hour12: false,
+              }) : '',
+              maxCapacity: event.extendedProps.maxCapacity,
+            }))}
+          />
+
           {/* Custom View Buttons */}
           <div className="flex justify-between mt-4">
             <div>
@@ -214,18 +236,15 @@ const Calendar: React.FC = () => {
           </div>
         </div>
 
-        <div className="lg:mt-5">
-          <Filtro/>
-        </div>
-
-        <div className="lg:w-1/3 w-full mb-4 lg:mb-0 lg:-mt-5">
-          <div className="text-2xl font-extrabold px-4 py-6">
-            Eventos
+        <div className="lg:w-1/3 w-full mb-4 lg:mt-5 ">
+          <div className="lg:mb-14">
+            <Filtro />
           </div>
+          <div className="text-2xl font-extrabold px-4 py-6">Eventos</div>
           <ul className="space-y-4 px-4">
             {currentEvents.length <= 0 && (
               <div className="italic text-center text-gray-400">
-                No Events Present
+                Por el momento no hay eventos
               </div>
             )}
 
@@ -280,7 +299,7 @@ const Calendar: React.FC = () => {
             <DialogTitle>Crear Evento</DialogTitle>
           </DialogHeader>
           <form className="space-y-4" onSubmit={handleAddEvent}>
-          <div className="mt-4">
+            <div className="mt-4">
               <label className="block text-lg font-medium">Título</label>
               <input
                 type="text"
@@ -290,7 +309,7 @@ const Calendar: React.FC = () => {
                 }
                 required
                 className="w-full border border-gray-200 p-3 rounded-md text-lg dark:text-gray-400 bg-white dark:bg-gray-700"
-            />
+              />
             </div>
             <div className="mt-4">
               <label className="block text-lg font-medium">Organizador</label>
@@ -304,12 +323,14 @@ const Calendar: React.FC = () => {
                   }))
                 }
                 className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
-            />
+              />
             </div>
             <label className="block text-lg font-medium">Facultad</label>
             <select
               value={newEvent.faculty}
-              onChange={(e) => setNewEvent((prev) => ({ ...prev, faculty: e.target.value }))}
+              onChange={(e) =>
+                setNewEvent((prev) => ({ ...prev, faculty: e.target.value }))
+              }
               className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
             >
               <option value="">Seleccione una facultad</option>
@@ -320,7 +341,9 @@ const Calendar: React.FC = () => {
             <label className="block text-lg font-medium mt-4">Temática</label>
             <select
               value={newEvent.topic}
-              onChange={(e) => setNewEvent((prev) => ({ ...prev, topic: e.target.value }))}
+              onChange={(e) =>
+                setNewEvent((prev) => ({ ...prev, topic: e.target.value }))
+              }
               className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
             >
               <option value="">Seleccione una temática</option>
@@ -333,7 +356,9 @@ const Calendar: React.FC = () => {
             </label>
             <select
               value={newEvent.eventType}
-              onChange={(e) => setNewEvent((prev) => ({ ...prev, eventType: e.target.value }))}
+              onChange={(e) =>
+                setNewEvent((prev) => ({ ...prev, eventType: e.target.value }))
+              }
               className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
             >
               <option value="">Seleccione el tipo de evento</option>
