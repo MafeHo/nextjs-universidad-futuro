@@ -281,9 +281,12 @@ const Calendar: React.FC = () => {
               className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
             >
               <option value="">Seleccione una facultad</option>
-              <option value="Ciencias">Ciencias</option>
+              <option value="Artes y Humanidades">Artes y Humanidades</option>
+              <option value="Ciencias Agropecuarias">Ciencias Agropecuarias</option>
+              <option value="Ciencias Exactas y Naturales">Ciencias Exactas y Naturales</option>
+              <option value="Ciencias Juridicas y Sociales">Ciencias Jurídicas y Sociales</option>
+              <option value="Ciencias para la salud">Ciencias para la salud</option>
               <option value="Ingeniería">Ingeniería</option>
-              <option value="Humanidades">Humanidades</option>
             </select>
             <label className="block text-lg font-medium mt-4">Temática</label>
             <select
@@ -309,9 +312,9 @@ const Calendar: React.FC = () => {
               className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
             >
               <option value="">Seleccione el tipo de evento</option>
+              <option value="Conferencia">Conferencia</option>
               <option value="Seminario">Seminario</option>
               <option value="Taller">Taller</option>
-              <option value="Conferencia">Conferencia</option>
             </select>
             {/* Hora de inicio y fin */}
             <div className="mt-4">
