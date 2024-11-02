@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Card from "app/components/home/Cards/Cards";
+
 import {
   formatDate,
   DateSelectArg,
@@ -20,6 +20,7 @@ import {
 } from "../../../ui/dialog";
 //import esLocale from '@fullcalendar/core/locales/es'; // Importa el idioma español
 import { Filtro } from "app/components/filtros";
+import EventCard from '../EventCard';
 
 const Calendar: React.FC = () => {
   const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
@@ -166,29 +167,10 @@ const Calendar: React.FC = () => {
                 : []
             }
             locale="es"
-            themeSystem="standard" // Agrega esto
+            themeSystem="standard" 
           />
 
-          <Card
-            events={currentEvents.map((event) => ({
-              title: event.title,
-              organizer: event.extendedProps.organizer,
-              faculty: event.extendedProps.faculty,
-              topic: event.extendedProps.topic,
-              eventType: event.extendedProps.eventType,
-              start: event.start ? formatDate(event.start, {
-                hour: "numeric",
-                minute: "numeric",
-                hour12: false,
-              }) : '',
-              end: event.end ? formatDate(event.end, {
-                hour: "numeric",
-                minute: "numeric",
-                hour12: false,
-              }) : '',
-              maxCapacity: event.extendedProps.maxCapacity,
-            }))}
-          />
+          
 
           {/* Custom View Buttons */}
           <div className="flex justify-between mt-4">
@@ -237,9 +219,10 @@ const Calendar: React.FC = () => {
         </div>
 
         <div className="lg:w-1/3 w-full mb-4 lg:mt-5 ">
-          <div className="lg:mb-14">
+          <div className="lg:mb-14 mb-7">
             <Filtro />
           </div>
+          
           <div className="text-2xl font-extrabold px-4 py-6">Eventos</div>
           <ul className="space-y-4 px-4">
             {currentEvents.length <= 0 && (
@@ -250,43 +233,7 @@ const Calendar: React.FC = () => {
 
             {currentEvents.length > 0 &&
               currentEvents.map((event: EventApi) => (
-                <li
-                  className="border border-gray-200 shadow px-4 py-2 rounded-md text-blue-800 dark:text-white bg-white dark:bg-gray-900"
-                  key={event.id}
-                >
-                  <div className="font-bold">{event.title}</div>
-                  <div className="text-sm text-slate-600 dark:text-white">
-                    <p>Organizador: {event.extendedProps.organizer}</p>
-                    <p>Facultad: {event.extendedProps.faculty}</p>
-                    <p>Temática: {event.extendedProps.topic}</p>
-                    <p>Tipo de Evento: {event.extendedProps.eventType}</p>
-                    <p>
-                      Hora Inicio:{" "}
-                      {formatDate(event.start!, {
-                        hour: "numeric",
-                        minute: "numeric",
-                        hour12: false,
-                      })}
-                    </p>
-                    <p>
-                      Hora Fin:{" "}
-                      {formatDate(event.end!, {
-                        hour: "numeric",
-                        minute: "numeric",
-                        hour12: false,
-                      })}
-                    </p>
-                    <p>Cupos Máximos: {event.extendedProps.maxCapacity}</p>
-                  </div>
-                  <br />
-                  <label className="text-slate-950 dark:text-white">
-                    {formatDate(event.start!, {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </label>
-                </li>
+                <EventCard key={event.id} event={event} />
               ))}
           </ul>
         </div>

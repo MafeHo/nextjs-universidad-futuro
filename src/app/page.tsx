@@ -1,58 +1,42 @@
 "use client";
 
-import Card from "app/components/home/Cards/Cards";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { EventApi } from "@fullcalendar/core";
+import Cards from "../components/home/Cards/Cards";
+
 
 export default function Home() {
   const router = useRouter();
+  const [events, setEvents] = useState<EventApi[]>([]);
+
+  // Cargar eventos desde localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedEvents = localStorage.getItem("events");
+      if (savedEvents) {
+        // Parseamos y tomamos solo los tres más recientes
+        const allEvents = JSON.parse(savedEvents);
+        const recentEvents = allEvents.slice(-3); // Los tres últimos eventos
+        setEvents(recentEvents);
+      }
+    }
+  }, []);
 
   const handleButtonClick = () => {
     router.push("/calendario");
   };
 
-  const eventicosMientrasq = [
-    {
-      title: "Evento de Bienvenida",
-      organizer: "Facultad de Ingeniería",
-      faculty: "Ingeniería",
-      topic: "Introducción al Año Académico",
-      eventType: "Académico",
-      start: "2024-11-01T10:00",
-      end: "2024-11-01T12:00",
-      maxCapacity: "100",
-    },
-    {
-      title: "Conferencia de Innovación",
-      organizer: "Departamento de Ciencias",
-      faculty: "Ciencias",
-      topic: "Innovación en Tecnología",
-      eventType: "Conferencia",
-      start: "2024-11-03T15:00",
-      end: "2024-11-03T17:00",
-      maxCapacity: "200",
-    },
-    {
-      title: "Taller de Emprendimiento",
-      organizer: "Facultad de Negocios",
-      faculty: "Negocios",
-      topic: "Emprendimiento y Startups",
-      eventType: "Taller",
-      start: "2024-11-05T09:00",
-      end: "2024-11-05T11:00",
-      maxCapacity: "50",
-    },
-  ];
-
   return (
     <div className="relative w-full lg:min-h-screen">
-      {/* Imagen de fondo con ancho completo y altura ajustada */}
+      {/* Imagen de fondo */}
       <div className="absolute inset-0 h-[80vh] -z-10">
         <Image
           className="w-full h-full object-cover"
           src="/images/campus-universitario.jpg"
           alt="Imagen del campus universitario"
-          layout="fill" // Usamos layout fill para ocupar todo el contenedor
+          layout="fill"
           priority
         />
       </div>
@@ -77,13 +61,9 @@ export default function Home() {
           ¡Explora eventos!
         </button>
       </div>
-      
-      
-      {/* Tarjetas debajo de la sección de bienvenida */}
-      <div className="md:flex -mt-20 justify-center items-center gap-6">
-        <Card events={eventicosMientrasq} />
-  
-      </div>
+
+       {/* Aquí se renderiza el componente Cards */}
+       <Cards events={events} />
     </div>
   );
 }
