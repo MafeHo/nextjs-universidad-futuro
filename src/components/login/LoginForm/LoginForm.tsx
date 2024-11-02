@@ -6,9 +6,11 @@ import UserService from 'app/services/userService'
 import { useState } from 'react'
 import MD5 from 'crypto-js/md5'
 import { UsuarioModel } from 'app/models/usuario.model'
+import useSecurityStore from 'app/stores/useSecurityStore'
 
 export const LoginForm = () => {
     const router = useRouter()
+    const { setUser } = useSecurityStore()
     const [formData, setFormData] = useState({
         email: '',
         clave: '',
@@ -41,9 +43,8 @@ export const LoginForm = () => {
                 console.log('====================================')
                 console.log(data)
                 console.log('====================================')
-                if (UserService.storeIdentifiedUserData(data)) {
-                    router.push('/doblefactor') // Redirige a la página de doble factor
-                }
+                setUser(data)
+                router.push('/doblefactor') // Redirige a la página de doble factor
             }
         })
     }

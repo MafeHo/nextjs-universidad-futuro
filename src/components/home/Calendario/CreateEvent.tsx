@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../ui/dialog'
+import useSecurityStore from 'app/stores/useSecurityStore'
+import { DateSelectArg } from '@fullcalendar/core/index.js'
+import LogicService from 'app/services/logicService'
+import { EventoModel } from 'app/models/evento.model'
 
 interface CreateEventProps {
     isDialogOpen: boolean
@@ -28,7 +32,8 @@ interface CreateEventProps {
             attendees: string
         }>
     >
-    handleAddEvent: (e: React.FormEvent) => void
+    selectedDate: DateSelectArg | null
+    handleCloseDialog: () => void
 }
 
 const CreateEvent: React.FC<CreateEventProps> = ({
@@ -36,14 +41,69 @@ const CreateEvent: React.FC<CreateEventProps> = ({
     setIsDialogOpen,
     newEvent,
     setNewEvent,
-    handleAddEvent,
+    selectedDate,
+    handleCloseDialog,
 }) => {
-    // Validar si usuario en local storage
-    const [user, setUser] = useState(localStorage.getItem('user-data'))
+    const { user } = useSecurityStore()
 
-    useEffect(() => {
-        console.log(user)
-    }, [user])
+    const handleAddEvent = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (newEvent.title && selectedDate) {
+            const calendarApi = selectedDate.view.calendar
+            calendarApi.unselect()
+
+            // Obtener las fechas de inicio y fin con las horas especificadas en el formulario
+            const startDateTime = new Date(selectedDate.start)
+            const [startHour, startMinute] = newEvent.startTime
+                .split(':')
+                .map(Number)
+            startDateTime.setHours(startHour, startMinute)
+
+            const endDateTime = new Date(selectedDate.start)
+            const [endHour, endMinute] = newEvent.endTime.split(':').map(Number)
+            endDateTime.setHours(endHour, endMinute)
+
+            const new_event: EventoModel = {
+                titulo: newEvent.title,
+                facultad: newEvent.faculty,
+                tematica: newEvent.topic,
+                tipoEvento: newEvent.eventType,
+                fechaInicio: startDateTime.toISOString(),
+                fechaFinal: endDateTime.toISOString(),
+                cupoInscripcion: Number(newEvent.maxCapacity),
+            }
+
+            try {
+                const organizerId: number = await LogicService.getOrganizerIdByEmail(
+                    user!.correo!
+                )
+                new_event.organizadorId = organizerId
+                await LogicService.createEvent(new_event)
+            } catch (error) {
+                console.error('Error creating event:', error)
+                alert('Error al crear el evento. Inténtalo de nuevo.')
+                return
+            }
+
+            newEvent.organizer = user!.primerNombre + ' ' + user!.primerApellido
+
+            const newCalendarEvent = {
+                id: `${startDateTime.toISOString()}-${newEvent.title}`,
+                title: newEvent.title,
+                start: startDateTime,
+                end: endDateTime,
+                allDay: false,
+                organizer: newEvent.organizer,
+                faculty: newEvent.faculty,
+                topic: newEvent.topic,
+                eventType: newEvent.eventType,
+                maxCapacity: newEvent.maxCapacity,
+            }
+
+            calendarApi.addEvent(newCalendarEvent)
+            handleCloseDialog()
+        }
+    }
 
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
