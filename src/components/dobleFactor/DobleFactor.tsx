@@ -115,4 +115,3 @@ export const DobleFactor = () => {
 };
 
 export default DobleFactor;
-
