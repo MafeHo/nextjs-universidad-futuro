@@ -12,12 +12,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "../../../ui/dialog";
+import CreateEvent from "../CreateEvent";
 //import esLocale from '@fullcalendar/core/locales/es'; // Importa el idioma español
 import { Filtro } from "app/components/filtros";
 import EventCard from '../EventCard';
@@ -167,10 +162,10 @@ const Calendar: React.FC = () => {
                 : []
             }
             locale="es"
-            themeSystem="standard" 
+            themeSystem="standard"
           />
 
-          
+
 
           {/* Custom View Buttons */}
           <div className="flex justify-between mt-4">
@@ -222,7 +217,7 @@ const Calendar: React.FC = () => {
           <div className="lg:mb-14 mb-7">
             <Filtro />
           </div>
-          
+
           <div className="text-2xl font-extrabold px-4 py-6">Eventos</div>
           <ul className="space-y-4 px-4">
             {currentEvents.length <= 0 && (
@@ -239,141 +234,16 @@ const Calendar: React.FC = () => {
         </div>
       </div>
 
-      {/* Dialog for adding new events */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-h-[550px] overflow-y-auto bg-white dark:bg-gray-900">
-          <DialogHeader>
-            <DialogTitle>Crear Evento</DialogTitle>
-          </DialogHeader>
-          <form className="space-y-4" onSubmit={handleAddEvent}>
-            <div className="mt-4">
-              <label className="block text-lg font-medium">Título</label>
-              <input
-                type="text"
-                value={newEvent.title}
-                onChange={(e) =>
-                  setNewEvent((prev) => ({ ...prev, title: e.target.value }))
-                }
-                required
-                className="w-full border border-gray-200 p-3 rounded-md text-lg dark:text-gray-400 bg-white dark:bg-gray-700"
-              />
-            </div>
-            <div className="mt-4">
-              <label className="block text-lg font-medium">Organizador</label>
-              <input
-                type="text"
-                value={newEvent.organizer}
-                onChange={(e) =>
-                  setNewEvent((prev) => ({
-                    ...prev,
-                    organizer: e.target.value,
-                  }))
-                }
-                className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
-              />
-            </div>
-            <label className="block text-lg font-medium">Facultad</label>
-            <select
-              value={newEvent.faculty}
-              onChange={(e) =>
-                setNewEvent((prev) => ({ ...prev, faculty: e.target.value }))
-              }
-              className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
-            >
-              <option value="">Seleccione una facultad</option>
-              <option value="Artes y Humanidades">Artes y Humanidades</option>
-              <option value="Ciencias Agropecuarias">Ciencias Agropecuarias</option>
-              <option value="Ciencias Exactas y Naturales">Ciencias Exactas y Naturales</option>
-              <option value="Ciencias Juridicas y Sociales">Ciencias Jurídicas y Sociales</option>
-              <option value="Ciencias para la salud">Ciencias para la salud</option>
-              <option value="Ingeniería">Ingeniería</option>
-            </select>
-            <label className="block text-lg font-medium mt-4">Temática</label>
-            <select
-              value={newEvent.topic}
-              onChange={(e) =>
-                setNewEvent((prev) => ({ ...prev, topic: e.target.value }))
-              }
-              className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
-            >
-              <option value="">Seleccione una temática</option>
-              <option value="Academico">Académico</option>
-              <option value="Cultural">Cultural</option>
-            </select>
-
-            <label className="block text-lg font-medium mt-4">
-              Tipo de Evento
-            </label>
-            <select
-              value={newEvent.eventType}
-              onChange={(e) =>
-                setNewEvent((prev) => ({ ...prev, eventType: e.target.value }))
-              }
-              className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
-            >
-              <option value="">Seleccione el tipo de evento</option>
-              <option value="Conferencia">Conferencia</option>
-              <option value="Seminario">Seminario</option>
-              <option value="Taller">Taller</option>
-            </select>
-            {/* Hora de inicio y fin */}
-            <div className="mt-4">
-              <label className="block text-lg font-medium">
-                Hora de Inicio
-              </label>
-              <input
-                type="time"
-                value={newEvent.startTime}
-                onChange={(e) =>
-                  setNewEvent((prev) => ({
-                    ...prev,
-                    startTime: e.target.value,
-                  }))
-                }
-                required
-                className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
-              />
-            </div>
-
-            <div className="mt-4">
-              <label className="block text-lg font-medium">Hora de Fin</label>
-              <input
-                type="time"
-                value={newEvent.endTime}
-                onChange={(e) =>
-                  setNewEvent((prev) => ({ ...prev, endTime: e.target.value }))
-                }
-                required
-                className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
-              />
-            </div>
-            {/* Cupos máximos*/}
-            <div className="mt-4">
-              <label className="block text-lg font-medium">Cupos Máximos</label>
-              <input
-                type="number"
-                value={newEvent.maxCapacity}
-                onChange={(e) =>
-                  setNewEvent((prev) => ({
-                    ...prev,
-                    maxCapacity: e.target.value,
-                  }))
-                }
-                required
-                className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
-              />
-            </div>
-            <button
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-md"
-              type="submit"
-            >
-              Crear
-            </button>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <CreateEvent
+        isDialogOpen={isDialogOpen}
+        setIsDialogOpen={setIsDialogOpen}
+        newEvent={newEvent}
+        setNewEvent={setNewEvent}
+        handleAddEvent={handleAddEvent}
+      ></CreateEvent>
     </div>
   );
 };
+
 
 export default Calendar;

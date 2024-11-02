@@ -2,6 +2,7 @@ import Link from "next/link";
 import { DarkMode } from "../DarkMode";
 
 export const Header = async () => {
+
   return (
     <>
       {/* Header for larger screens */}
@@ -44,7 +45,7 @@ export const Header = async () => {
               />
             </svg>
           </Link>
-          
+
         </div>
       </header>
 
