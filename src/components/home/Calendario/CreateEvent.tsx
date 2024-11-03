@@ -10,6 +10,8 @@ interface CreateEventProps {
     setIsDialogOpen: (isOpen: boolean) => void
     newEvent: {
         title: string
+        description: string
+        location: string
         organizer: string
         faculty: string
         topic: string
@@ -22,6 +24,8 @@ interface CreateEventProps {
     setNewEvent: React.Dispatch<
         React.SetStateAction<{
             title: string
+            description: string
+            location: string
             organizer: string
             faculty: string
             topic: string
@@ -65,6 +69,8 @@ const CreateEvent: React.FC<CreateEventProps> = ({
 
             const new_event: EventoModel = {
                 titulo: newEvent.title,
+                descripcion: newEvent.description,
+                lugar: newEvent.location,
                 facultad: newEvent.faculty,
                 tematica: newEvent.topic,
                 tipoEvento: newEvent.eventType,
@@ -93,6 +99,8 @@ const CreateEvent: React.FC<CreateEventProps> = ({
                 start: startDateTime,
                 end: endDateTime,
                 allDay: false,
+                description: newEvent.description,
+                location: newEvent.location,
                 organizer: newEvent.organizer,
                 faculty: newEvent.faculty,
                 topic: newEvent.topic,
@@ -145,6 +153,37 @@ const CreateEvent: React.FC<CreateEventProps> = ({
                                 className="w-full border border-gray-200 p-3 rounded-md dark:text-gray-400 bg-white dark:bg-gray-700"
                             />
                             </div> */}
+                            <div className='mt-4'>
+                            <label className='block text-lg font-medium'>Descripción</label>
+                            <textarea
+                                value={newEvent.description}
+                                onChange={(e) =>
+                                    setNewEvent((prev) => ({
+                                        ...prev,
+                                        description: e.target.value,
+                                    }))
+                                }
+                                required
+                                className='w-full border border-gray-200 p-3 rounded-md text-lg dark:text-gray-400 bg-white dark:bg-gray-700'
+                            />
+                        </div>
+
+                        <div className='mt-4'>
+                            <label className='block text-lg font-medium'>Lugar</label>
+                            <input
+                                type='text'
+                                value={newEvent.location}
+                                onChange={(e) =>
+                                    setNewEvent((prev) => ({
+                                        ...prev,
+                                        location: e.target.value,
+                                    }))
+                                }
+                                required
+                                className='w-full border border-gray-200 p-3 rounded-md text-lg dark:text-gray-400 bg-white dark:bg-gray-700'
+                            />
+                        </div>
+
                             <label className='block text-lg font-medium'>
                                 Facultad
                             </label>

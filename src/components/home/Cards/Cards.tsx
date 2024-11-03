@@ -22,6 +22,8 @@ export default function Cards({ events }: CardsProps) {
           >
             <div className="font-bold">{event.title}</div>
             <div className="text-sm text-slate-600 dark:text-white">
+              <p>Descripcion: {event.extendedProps.description}</p>
+              <p>Lugar: {event.extendedProps.location}</p>
               <p>Organizador: {event.extendedProps.organizer}</p>
               <p>Facultad: {event.extendedProps.faculty}</p>
               <p>Temática: {event.extendedProps.topic}</p>

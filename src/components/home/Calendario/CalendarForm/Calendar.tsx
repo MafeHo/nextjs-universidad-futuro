@@ -24,6 +24,8 @@ const Calendar: React.FC = () => {
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
     const [newEvent, setNewEvent] = useState({
         title: '',
+        description: '',
+        location: '',
         organizer: '',
         faculty: '',
         topic: '',
@@ -73,6 +75,8 @@ const Calendar: React.FC = () => {
         setIsDialogOpen(false)
         setNewEvent({
             title: '',
+            description: '',
+            location: '',
             organizer: '',
             faculty: '',
             topic: '',

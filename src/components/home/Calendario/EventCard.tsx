@@ -11,6 +11,8 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => (
   <li className="border border-gray-200 shadow px-3 py-2 rounded-md text-blue-800 dark:text-white bg-white dark:bg-gray-900">
     <div className="font-bold">{event.title}</div>
     <div className="text-sm text-slate-600 dark:text-white">
+      <p>Descripcion: {event.extendedProps.description}</p>
+      <p>Lugar: {event.extendedProps.location}</p>
       <p>Organizador: {event.extendedProps.organizer}</p>
       <p>Facultad: {event.extendedProps.faculty}</p>
       <p>Temática: {event.extendedProps.topic}</p>

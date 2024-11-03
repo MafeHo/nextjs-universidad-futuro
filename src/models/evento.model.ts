@@ -1,6 +1,8 @@
 export class EventoModel {
     id?: string
     titulo?: string
+    descripcion?:string
+    lugar?: string
     organizadorId?: number
     organizador?: string
     facultad?: string
