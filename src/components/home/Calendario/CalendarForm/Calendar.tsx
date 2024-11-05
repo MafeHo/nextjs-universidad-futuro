@@ -17,7 +17,7 @@ import CreateEvent from '../CreateEvent'
 import { Filtro } from 'app/components/filtros'
 import EventCard from '../EventCard'
 import LogicService from 'app/services/logicService'
-import { title } from 'process'
+import useEventsStore from 'app/stores/useEventsStore'
 
 const Calendar: React.FC = () => {
     const [currentEvents, setCurrentEvents] = useState<EventApi[]>([])
@@ -41,20 +41,45 @@ const Calendar: React.FC = () => {
     // useRef para acceder al componente FullCalendar
     const calendarRef = useRef<FullCalendar | null>(null)
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const savedEvents = localStorage.getItem('events')
-            if (savedEvents) {
-                setCurrentEvents(JSON.parse(savedEvents))
-            }
+    const { setMyEvents, parseToEventApi, parsedEvents } = useEventsStore()
+    const [events, setEvents] = useState<EventApi[]>([])
+
+    const fetchEvents = async () => {
+        try {
+            const events = await LogicService.getEvents()
+            const parsedEvents = parseToEventApi(events)
+            setCurrentEvents(parsedEvents)
+            setEvents(parsedEvents)
+            setMyEvents(events)
+            console.log('Events fetched:', events)
+        } catch (error) {
+            console.error('Error fetching events:', error)
         }
-    }, [])
+    }
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('events', JSON.stringify(currentEvents))
-        }
-    }, [currentEvents])
+        setCurrentEvents(parsedEvents)
+        setEvents(parsedEvents)
+    }, [parsedEvents])
+
+    useEffect(() => {
+        fetchEvents()
+    }, [])
+
+    // useEffect(() => {
+    //     if (typeof window !== 'undefined') {
+    //         const savedEvents = localStorage.getItem('events')
+    //         if (savedEvents) {
+    //             setCurrentEvents(JSON.parse(savedEvents))
+    //         }
+    //     }
+    // }, [])
+
+    // useEffect(() => {
+    //     if (typeof window !== 'undefined') {
+    //         localStorage.setItem('events', JSON.stringify(currentEvents))
+    //     }
+    // }, [currentEvents])
 
     const handleDateClick = (selected: DateSelectArg) => {
         setSelectedDate(selected)
@@ -104,6 +129,13 @@ const Calendar: React.FC = () => {
         }
     }
 
+    const handleEventsSet = (newEvents: EventApi[]) => {
+        if (JSON.stringify(events) !== JSON.stringify(newEvents)) {
+            setEvents(newEvents)
+            setCurrentEvents(newEvents)
+        }
+    }
+
     return (
         <div className='pt-20 pl-5 pr-5 bg-white dark:bg-gray-800 min-h-screen'>
             <div className='flex flex-col lg:flex-row gap-8 '>
@@ -126,11 +158,37 @@ const Calendar: React.FC = () => {
                         dayMaxEvents={true}
                         select={handleDateClick}
                         eventClick={handleEventClick}
-                        eventsSet={(events) => setCurrentEvents(events)}
+                        events={events.map((event) => ({
+                            id: event.id,
+                            title: event.title,
+                            start: event.start || undefined,
+                            end: event.end || undefined,
+                            allDay: event.allDay,
+                            extendedProps: event.extendedProps,
+                        }))}
+                        eventsSet={handleEventsSet}
+                        // eventsSet={(events) => setCurrentEvents(events)}
                         initialEvents={
-                            typeof window !== 'undefined'
-                                ? JSON.parse(localStorage.getItem('events') || '[]')
-                                : []
+                            // typeof window !== 'undefined'
+                            //     ? JSON.parse(localStorage.getItem('events') || '[]')
+                            // calendarView === 'dayGridMonth'
+                            //     ? currentEvents.map((event) => ({
+                            //           id: event.id,
+                            //           title: event.title,
+                            //           start: event.start || undefined,
+                            //           end: event.end || undefined,
+                            //           allDay: event.allDay,
+                            //           extendedProps: event.extendedProps,
+                            //       }))
+                            //     : []
+                            events.map((event) => ({
+                                id: event.id,
+                                title: event.title,
+                                start: event.start || undefined,
+                                end: event.end || undefined,
+                                allDay: event.allDay,
+                                extendedProps: event.extendedProps,
+                            }))
                         }
                         locale='es'
                         themeSystem='standard'

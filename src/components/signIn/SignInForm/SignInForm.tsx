@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 // import { PARTICIPANTE, ORGANIZADOR } from 'app/constants/cts'
-import UserService from 'app/services/userService'
+import SecurityService from 'app/services/securityService'
 import { SecurityConfig } from 'app/config/securityConfig'
 import { useRouter } from 'next/navigation'
 
@@ -80,7 +80,7 @@ export const SignInForm = () => {
 
         // Aquí puedes manejar la redirección al dashboard
         try {
-            await UserService.register(user)
+            await SecurityService.register(user)
                 .then((response) => {
                     console.log(response)
                     if (response.status === 200) {

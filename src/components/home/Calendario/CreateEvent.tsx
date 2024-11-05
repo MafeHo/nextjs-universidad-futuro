@@ -67,6 +67,12 @@ const CreateEvent: React.FC<CreateEventProps> = ({
             const [endHour, endMinute] = newEvent.endTime.split(':').map(Number)
             endDateTime.setHours(endHour, endMinute)
 
+            // Validar que la fecha de inicio sea menor a la fecha de fin
+            if (startDateTime >= endDateTime) {
+                alert('La fecha de inicio debe ser menor a la fecha de fin')
+                return
+            }
+
             const new_event: EventoModel = {
                 titulo: newEvent.title,
                 descripcion: newEvent.description,
@@ -79,37 +85,59 @@ const CreateEvent: React.FC<CreateEventProps> = ({
                 cupoInscripcion: Number(newEvent.maxCapacity),
             }
 
+            let event = null
             try {
-                const organizerId: number = await LogicService.getOrganizerIdByEmail(
-                    user!.correo!
+                if (!user) {
+                    alert('Debes iniciar sesión para crear un evento')
+                    return
+                }
+                if (!user.correo) {
+                    alert('El correo del usuario no está disponible')
+                    return
+                }
+                const organizerArr = await LogicService.getOrganizerIdByEmail(
+                    user.correo
                 )
+                let organizerId = null
+                if (organizerArr) {
+                    organizerId =
+                        Array.isArray(organizerArr) && organizerArr.length > 0
+                            ? organizerArr[0].id
+                            : null
+                }
+                if (!organizerArr || !organizerId) {
+                    alert('No se encontró el organizador')
+                    return
+                }
                 new_event.organizadorId = organizerId
-                await LogicService.createEvent(new_event)
+                event = await LogicService.createEvent(new_event)
             } catch (error) {
                 console.error('Error creating event:', error)
                 alert('Error al crear el evento. Inténtalo de nuevo.')
                 return
             }
 
-            newEvent.organizer = user!.primerNombre + ' ' + user!.primerApellido
+            if (event) {
+                newEvent.organizer = user!.primerNombre + ' ' + user!.primerApellido
 
-            const newCalendarEvent = {
-                id: `${startDateTime.toISOString()}-${newEvent.title}`,
-                title: newEvent.title,
-                start: startDateTime,
-                end: endDateTime,
-                allDay: false,
-                description: newEvent.description,
-                location: newEvent.location,
-                organizer: newEvent.organizer,
-                faculty: newEvent.faculty,
-                topic: newEvent.topic,
-                eventType: newEvent.eventType,
-                maxCapacity: newEvent.maxCapacity,
+                const newCalendarEvent = {
+                    // id: `${startDateTime.toISOString()}-${newEvent.title}`,
+                    id: event.id,
+                    title: newEvent.title,
+                    start: startDateTime,
+                    end: endDateTime,
+                    allDay: false,
+                    description: newEvent.description,
+                    location: newEvent.location,
+                    organizer: newEvent.organizer,
+                    faculty: newEvent.faculty,
+                    topic: newEvent.topic,
+                    eventType: newEvent.eventType,
+                    maxCapacity: newEvent.maxCapacity,
+                }
+                calendarApi.addEvent(newCalendarEvent)
+                handleCloseDialog()
             }
-
-            calendarApi.addEvent(newCalendarEvent)
-            handleCloseDialog()
         }
     }
 
@@ -154,35 +182,39 @@ const CreateEvent: React.FC<CreateEventProps> = ({
                             />
                             </div> */}
                             <div className='mt-4'>
-                            <label className='block text-lg font-medium'>Descripción</label>
-                            <textarea
-                                value={newEvent.description}
-                                onChange={(e) =>
-                                    setNewEvent((prev) => ({
-                                        ...prev,
-                                        description: e.target.value,
-                                    }))
-                                }
-                                required
-                                className='w-full border border-gray-200 p-3 rounded-md text-lg dark:text-gray-400 bg-white dark:bg-gray-700'
-                            />
-                        </div>
+                                <label className='block text-lg font-medium'>
+                                    Descripción
+                                </label>
+                                <textarea
+                                    value={newEvent.description}
+                                    onChange={(e) =>
+                                        setNewEvent((prev) => ({
+                                            ...prev,
+                                            description: e.target.value,
+                                        }))
+                                    }
+                                    required
+                                    className='w-full border border-gray-200 p-3 rounded-md text-lg dark:text-gray-400 bg-white dark:bg-gray-700'
+                                />
+                            </div>
 
-                        <div className='mt-4'>
-                            <label className='block text-lg font-medium'>Lugar</label>
-                            <input
-                                type='text'
-                                value={newEvent.location}
-                                onChange={(e) =>
-                                    setNewEvent((prev) => ({
-                                        ...prev,
-                                        location: e.target.value,
-                                    }))
-                                }
-                                required
-                                className='w-full border border-gray-200 p-3 rounded-md text-lg dark:text-gray-400 bg-white dark:bg-gray-700'
-                            />
-                        </div>
+                            <div className='mt-4'>
+                                <label className='block text-lg font-medium'>
+                                    Lugar
+                                </label>
+                                <input
+                                    type='text'
+                                    value={newEvent.location}
+                                    onChange={(e) =>
+                                        setNewEvent((prev) => ({
+                                            ...prev,
+                                            location: e.target.value,
+                                        }))
+                                    }
+                                    required
+                                    className='w-full border border-gray-200 p-3 rounded-md text-lg dark:text-gray-400 bg-white dark:bg-gray-700'
+                                />
+                            </div>
 
                             <label className='block text-lg font-medium'>
                                 Facultad

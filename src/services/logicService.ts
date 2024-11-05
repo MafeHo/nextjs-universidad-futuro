@@ -4,7 +4,7 @@ import axios from 'axios'
 
 const LOGIC_URL = LogicConfig.LOGIC_URL
 
-const createEvent = async (eventData: EventoModel) => {
+const createEvent = async (eventData: EventoModel): Promise<EventoModel> => {
     try {
         const response = await axios.post(LOGIC_URL + 'evento', eventData, {
             headers: {
@@ -31,15 +31,53 @@ const getOrganizerIdByEmail = async (correo: string): Promise<number> => {
                 },
             }
         )
-        return response.data.id
+        return response.data
     } catch (error) {
         console.error('Error getting organizer:', error)
         throw error
     }
 }
 
+const getEvents = async (): Promise<EventoModel[]> => {
+    try {
+        const response = await axios.get(
+            LOGIC_URL + 'evento?filter={ "include": [ {"relation": "organizador"}]}',
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        console.error('Error getting events:', error)
+        throw error
+    }
+}
+
+const filterEvents = async (filter: string): Promise<EventoModel[]> => {
+    try {
+        const response = await axios.get(
+            LOGIC_URL + `evento?filter=${filter}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        console.error('Error filtering events:', error)
+        throw error
+    }
+}
+
 const LogicService = {
+    getEvents,
     createEvent,
+    filterEvents,
     getOrganizerIdByEmail,
 }
 

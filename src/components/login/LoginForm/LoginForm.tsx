@@ -2,11 +2,11 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import UserService from 'app/services/userService'
 import { useState } from 'react'
 import MD5 from 'crypto-js/md5'
 import { UsuarioModel } from 'app/models/usuario.model'
 import useSecurityStore from 'app/stores/useSecurityStore'
+import SecurityService from 'app/services/securityService'
 
 export const LoginForm = () => {
     const router = useRouter()
@@ -34,7 +34,7 @@ export const LoginForm = () => {
             correo: formData.email,
             clave: cryptoPassword,
         }
-        UserService.login(credentials).then((data: UsuarioModel) => {
+        SecurityService.login(credentials).then((data: UsuarioModel) => {
             if (data._id == undefined || data._id == null) {
                 alert(
                     'Credenciales incorrectas o falta la validacion del correo electronico'
