@@ -74,11 +74,56 @@ const filterEvents = async (filter: string): Promise<EventoModel[]> => {
     }
 }
 
+const getParticipantIdByEmail = async (correo: string): Promise<number> => {
+    try {
+        const response = await axios.get(
+            LOGIC_URL +
+                `participante?filter={"fields":["id"], "where": {"correo": "${correo}"}}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        console.error('Error getting participant:', error)
+        throw error
+    }
+}
+
+const inscriptionToEvent = async (
+    inscription : {
+        fecha: Date,
+        eventoId: number,
+        participanteId: number,
+    }
+): Promise<void> => {
+    try {
+        const response = await axios.post(
+            LOGIC_URL + `inscripcion/` , inscription,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        console.error('Error inscribing to event:', error)
+        throw error
+    }
+}
+
 const LogicService = {
     getEvents,
     createEvent,
     filterEvents,
+    inscriptionToEvent,
     getOrganizerIdByEmail,
+    getParticipantIdByEmail,
 }
 
 export default LogicService
