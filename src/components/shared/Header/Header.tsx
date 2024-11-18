@@ -28,7 +28,7 @@ export const Header = () => {
                             Contact
                         </Link>
                         <Link
-                            href='/about'
+                            href='/aboutus'
                             className='text-white hover:text-blue-500'>
                             About
                         </Link>
