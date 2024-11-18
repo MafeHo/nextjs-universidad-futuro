@@ -4,10 +4,12 @@ import { EventApi } from '@fullcalendar/core'
 import { formatDate } from '@fullcalendar/core'
 import LogicService from 'app/services/logicService'
 import useEventsStore from 'app/stores/useEventsStore'
+import useSecurityStore from 'app/stores/useSecurityStore'
 import { useEffect, useState } from 'react'
 
 export default function Cards() {
     const { parseToEventApi } = useEventsStore()
+    const { user } = useSecurityStore()
     const [events, setEvents] = useState<EventApi[]>([])
 
     useEffect(() => {
@@ -15,6 +17,49 @@ export default function Cards() {
             setEvents(parseToEventApi(events))
         })
     }, [])
+
+    const handleInscription = async (event: EventApi) => {
+        console.log('Inscribirse al evento:', event.title)
+        if (!user) {
+            alert('Debes iniciar sesión para inscribirte a un evento')
+            return
+        }
+
+        if (!user.correo) {
+            alert('El correo del usuario no está disponible')
+            return
+        }
+        LogicService.getParticipantIdByEmail(user.correo).then((participante) => {
+            console.log('====================================')
+            console.log('Participante:', participante)
+            console.log('====================================')
+        })
+
+        const participantArr = await LogicService.getParticipantIdByEmail(
+            user.correo
+        )
+        let participantId = null
+        if (participantArr) {
+            participantId =
+                Array.isArray(participantArr) && participantArr.length > 0
+                    ? participantArr[0].id
+                    : null
+        }
+        if (!participantArr || !participantId) {
+            alert('No se encontró el participante')
+            return
+        }
+
+        let inscription = {
+            fecha: new Date(),
+            eventoId: Number(event.id),
+            participanteId: participantId,
+        }
+
+        await LogicService.inscriptionToEvent(inscription).then(() => {
+            alert('Inscripción exitosa')
+        })
+    }
 
     return (
         <section className='md:flex -mt-20 justify-center items-center gap-6'>
@@ -71,9 +116,9 @@ export default function Cards() {
                         <div className='mt-4'>
                             <button
                                 className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center'
-                                onClick={() =>
-                                    alert(`Inscripción en el evento: ${event.title}`)
-                                }>
+                                onClick={() => {
+                                    handleInscription(event)
+                                }}>
                                 Inscribirse
                             </button>
                         </div>

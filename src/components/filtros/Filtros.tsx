@@ -5,7 +5,7 @@ import useEventsStore from 'app/stores/useEventsStore'
 import { useState } from 'react'
 
 export const Filtro = () => {
-    const { setMyEvents, parsedEvents, parseToEventApi, setParsedEvents } =
+    const { my_events, setMyEvents, parseToEventApi, setParsedEvents } =
         useEventsStore()
     const [facultad, setFacultad] = useState('')
     const [tematica, setTematica] = useState('')
@@ -60,6 +60,18 @@ export const Filtro = () => {
         document.querySelectorAll('select').forEach((select) => {
             select.value = ''
         })
+        LogicService.filterEvents(JSON.stringify({}))
+            .then((data) => {
+                console.log('====================================')
+                console.log(data)
+                console.log('====================================')
+                // Aquí puedes hacer algo con los datos filtrados
+                setMyEvents(data)
+                setParsedEvents(parseToEventApi(data))
+            })
+            .catch((error) => {
+                console.error('Error filtering events:', error)
+            })
     }
 
     return (
