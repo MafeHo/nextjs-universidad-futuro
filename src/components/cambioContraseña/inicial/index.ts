@@ -1,0 +1,1 @@
+export {Inicial} from "./Inicial"

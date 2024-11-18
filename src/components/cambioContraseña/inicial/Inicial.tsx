@@ -1,25 +1,20 @@
 'use client' // Esto indica que el componente es un Client Component
 
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { useState } from 'react'
 import MD5 from 'crypto-js/md5'
 import { UsuarioModel } from 'app/models/usuario.model'
 import useSecurityStore from 'app/stores/useSecurityStore'
 import SecurityService from 'app/services/securityService'
 
-export const LoginForm = () => {
+export const Inicial = () => {
     const router = useRouter()
-    const { setUser } = useSecurityStore()
     const [formData, setFormData] = useState({
         email: '',
-        clave: '',
     })
 
     const handleChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
-        console.log(name, value)
-
         setFormData({
             ...formData,
             [name]: value,
@@ -28,29 +23,9 @@ export const LoginForm = () => {
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault()
-        // Aquí puedes agregar lógica de autenticación si es necesario
-        let cryptoPassword = MD5(formData.clave).toString()
-        let credentials = {
-            correo: formData.email,
-            clave: cryptoPassword,
-        }
-        SecurityService.login(credentials).then((data: UsuarioModel) => {
-            if (data._id == undefined || data._id == null) {
-                alert(
-                    'Credenciales incorrectas o falta la validacion del correo electronico'
-                )
-            } else {
-                console.log('====================================')
-                console.log(data)
-                console.log('====================================')
-                setUser(data)
-                router.push('/doblefactor') // Redirige a la página de doble factor
-            }
-        })
-    }
-
-    const handleForgotPasswordClick = () => {
-        router.push('/inicial') // Redirige a la página "inicial" al hacer clic en "¿Olvidaste tu contraseña?"
+        // Aquí puedes agregar la lógica de envío del correo para cambiar la contraseña
+        console.log("Correo para cambio de contraseña enviado:", formData.email)
+        router.push('/codigo') // Redirige a la página de código para restablecer la contraseña
     }
 
     return (
@@ -60,18 +35,18 @@ export const LoginForm = () => {
                     onSubmit={handleSubmit}
                     className='grid gap-4 bg-blue-600 pr-8 dark:bg-gray-900 p-8 rounded-md shadow-lg'>
                     <h2 className='text-center text-2xl font-bold text-white dark:text-gray-300 mb-6'>
-                        Inicia Sesión
+                        Cambio de Contraseña
                     </h2>
 
                     <div className='flex items-center bg-white dark:bg-gray-700 rounded-md'>
-                        <label htmlFor='login__email' className='p-4'>
+                        <label htmlFor='reset__email' className='p-4'>
                             <svg className='w-5 h-5 fill-current text-gray-400'>
                                 <use xlinkHref='#icon-user' />
                             </svg>
                         </label>
                         <input
                             autoComplete='email'
-                            id='login__email'
+                            id='reset__email'
                             type='email'
                             name='email'
                             value={formData.email}
@@ -82,49 +57,17 @@ export const LoginForm = () => {
                         />
                     </div>
 
-                    <div className='flex items-center bg-white dark:bg-gray-700 rounded-md'>
-                        <label htmlFor='login__password' className='p-4'>
-                            <svg className='w-5 h-5 fill-current text-gray-400'>
-                                <use xlinkHref='#icon-lock' />
-                            </svg>
-                        </label>
-                        <input
-                            id='login__password'
-                            type='password'
-                            name='clave'
-                            value={formData.clave}
-                            onChange={handleChangeForm}
-                            placeholder='Contraseña'
-                            required
-                            className='w-full p-4 bg-transparent outline-none text-gray-400 placeholder-gray-400'
-                        />
+                    <div className='text-center text-muted mb-4'>
+                        <small>Te enviaremos un código a tu correo para que puedas cambiar la contraseña</small>
                     </div>
 
                     <div>
                         <button className='w-full p-4 bg-gray-800 dark:bg-blue-600 hover:bg-gray-700 dark:hover:bg-blue-500 text-white font-bold uppercase rounded-md cursor-pointer transition'>
-                            Ingresar
+                            Siguiente
                         </button>
                     </div>
-
-                    <div className='text-center'>
-                    <button
-                        type="button"
-                        onClick={handleForgotPasswordClick}
-                        className='text-white dark:text-gray-300'>
-                        ¿Olvidaste tu contraseña?
-                    </button>
-                    </div>
                 </form>
-                
-                <p className='text-center text-gray-600 dark:text-gray-300 mt-4'>
-                    ¿Eres nuevo?{' '}
-                    <Link href='/signIn' className='text-blue-600 underline'>
-                        Regístrate
-                    </Link>
-                    <svg className='w-4 h-4 inline-block ml-1 fill-current text-blue-600'>
-                        <use xlinkHref='#icon-arrow-right' />
-                    </svg>
-                </p>
+
             </div>
 
             <svg xmlns='http://www.w3.org/2000/svg' className='hidden'>
@@ -141,3 +84,5 @@ export const LoginForm = () => {
         </div>
     )
 }
+
+export default Inicial
