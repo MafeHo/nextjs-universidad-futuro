@@ -37,6 +37,11 @@ export const Header = () => {
                             className='text-white hover:text-blue-500'>
                             Calendario
                         </Link>
+                        <Link
+                            href='/listarUsuarios'
+                            className='text-white hover:text-blue-500'>
+                            Usuarios
+                        </Link>
                     </nav>
                 </div>
 
