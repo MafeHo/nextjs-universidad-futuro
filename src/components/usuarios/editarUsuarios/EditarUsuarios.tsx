@@ -42,9 +42,9 @@ const EditarUsuario: React.FC<EditarUsuarioProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded shadow-lg w-96">
-        <h2 className="text-xl font-semibold mb-4">Editar Usuario</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 ">
+      <div className="bg-white p-6 rounded shadow-lg w-96 dark:bg-gray-800 ">
+        <h2 className="text-xl font-semibold mb-4 text-black dark:text-blue-600">Editar Usuario</h2>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -52,7 +52,7 @@ const EditarUsuario: React.FC<EditarUsuarioProps> = ({
             placeholder="Primer Nombre"
             value={formValues.primerNombre}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
+            className="w-full border border-gray-300 rounded px-3 py-2 mb-4 text-black dark:text-gray-600"
           />
           <input
             type="text"
@@ -60,7 +60,7 @@ const EditarUsuario: React.FC<EditarUsuarioProps> = ({
             placeholder="Primer Apellido"
             value={formValues.primerApellido}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
+            className="w-full border border-gray-300 rounded px-3 py-2 mb-4 text-black dark:text-gray-600"
           />
           <input
             type="text"
@@ -68,7 +68,7 @@ const EditarUsuario: React.FC<EditarUsuarioProps> = ({
             placeholder="Teléfono"
             value={formValues.celular || ""}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
+            className="w-full border border-gray-300 rounded px-3 py-2 mb-4 text-black dark:text-gray-600"
           />
           <input
             type="email"
@@ -76,13 +76,13 @@ const EditarUsuario: React.FC<EditarUsuarioProps> = ({
             placeholder="Correo"
             value={formValues.correo}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
+            className="w-full border border-gray-300 rounded px-3 py-2 mb-4 text-black dark:text-gray-600"
           />
           <select
             name="roleId"
             value={formValues.roleId}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
+            className="w-full border border-gray-300 rounded px-3 py-2 mb-4 text-black dark:text-gray-600"
           >
             <option value="Organizador">Organizador</option>
             <option value="Participante">Participante</option>

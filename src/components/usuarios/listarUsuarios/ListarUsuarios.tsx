@@ -73,31 +73,32 @@ const ListarUsuarios: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto py-20">
+    <div className=" bg-white dark:bg-gray-800 pb-[102px]">
+    <div className="container mx-auto py-20 px-3">
       <h2 className="text-2xl font-semibold mb-6">Usuarios</h2>
       <div className="overflow-x-auto">
         <table className="table-auto w-full border-collapse border border-gray-300">
           <thead className="bg-gray-100">
             <tr>
-              <th className="border border-gray-300 px-4 py-2">Id</th>
-              <th className="border border-gray-300 px-4 py-2">Nombre</th>
-              <th className="border border-gray-300 px-4 py-2">Apellido</th>
-              <th className="border border-gray-300 px-4 py-2">Teléfono</th>
-              <th className="border border-gray-300 px-4 py-2">Correo</th>
-              <th className="border border-gray-300 px-4 py-2">Rol</th>
-              <th className="border border-gray-300 px-4 py-2">Opciones</th>
+              <th className="border border-gray-300 px-4 py-2 text-sm text-black dark:text-blue-600">Id</th>
+              <th className="border border-gray-300 px-4 py-2 text-sm text-black dark:text-blue-600">Nombre</th>
+              <th className="border border-gray-300 px-4 py-2 text-sm  md:table-cell text-black dark:text-blue-600">Apellido</th>
+              <th className="border border-gray-300 px-4 py-2 text-sm  lg:table-cell text-black dark:text-blue-600">Teléfono</th>
+              <th className="border border-gray-300 px-4 py-2 text-sm text-black dark:text-blue-600">Correo</th>
+              <th className="border border-gray-300 px-4 py-2 text-sm  md:table-cell text-black dark:text-blue-600">Rol</th>
+              <th className="border border-gray-300 px-4 py-2 text-sm text-black dark:text-blue-600">Opciones</th>
             </tr>
           </thead>
           <tbody>
             {usuarios.map((usuario) => (
               <tr key={usuario._id}>
-                <td className="border border-gray-300 px-4 py-2">{usuario._id}</td>
-                <td className="border border-gray-300 px-4 py-2">{usuario.primerNombre}</td>
-                <td className="border border-gray-300 px-4 py-2">{usuario.primerApellido}</td>
-                <td className="border border-gray-300 px-4 py-2">{usuario.celular || "N/A"}</td>
-                <td className="border border-gray-300 px-4 py-2">{usuario.correo}</td>
-                <td className="border border-gray-300 px-4 py-2">{usuario.roleId}</td>
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 px-4 py-2 text-sm">{usuario._id}</td>
+                <td className="border border-gray-300 px-4 py-2 text-sm">{usuario.primerNombre}</td>
+                <td className="border border-gray-300 px-4 py-2 text-sm  ">{usuario.primerApellido}</td>
+                <td className="border border-gray-300 px-4 py-2 text-sm  ">{usuario.celular || "N/A"}</td>
+                <td className="border border-gray-300 px-4 py-2 text-sm">{usuario.correo}</td>
+                <td className="border border-gray-300 px-4 py-2 text-sm  md:table-cell">{usuario.roleId}</td>
+                <td className="border border-gray-300 px-4 py-2 text-sm flex gap-2">
                   <button
                     onClick={() => handleEdit(usuario)}
                     className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 mr-2"
@@ -132,6 +133,7 @@ const ListarUsuarios: React.FC = () => {
           }}
         />
       )}
+    </div>
     </div>
   );
 };
