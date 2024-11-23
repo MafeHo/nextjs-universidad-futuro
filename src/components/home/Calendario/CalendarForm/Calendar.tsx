@@ -132,22 +132,22 @@ const Calendar: React.FC = () => {
     }
   };
 
-  const handleEditEvent = (event: EventApi) => {
-    setNewEvent({
-      title: event.title,
-      description: event.extendedProps.description,
-      location: event.extendedProps.location,
-      organizer: event.extendedProps.organizer,
-      faculty: event.extendedProps.faculty,
-      topic: event.extendedProps.topic,
-      eventType: event.extendedProps.eventType,
-      startTime: event.start ? event.start.toISOString().slice(0, 16) : "",
-      endTime: event.end ? event.end.toISOString().slice(0, 16) : "",
-      maxCapacity: event.extendedProps.maxCapacity,
-      attendees: event.extendedProps.attendees,
-    });
-    setIsDialogOpen(true);
-  };
+  // const handleEditEvent = (event: EventApi) => {
+  //   setNewEvent({
+  //     title: event.title,
+  //     description: event.extendedProps.description,
+  //     location: event.extendedProps.location,
+  //     organizer: event.extendedProps.organizer,
+  //     faculty: event.extendedProps.faculty,
+  //     topic: event.extendedProps.topic,
+  //     eventType: event.extendedProps.eventType,
+  //     startTime: event.start ? event.start.toISOString().slice(0, 16) : "",
+  //     endTime: event.end ? event.end.toISOString().slice(0, 16) : "",
+  //     maxCapacity: event.extendedProps.maxCapacity,
+  //     attendees: event.extendedProps.attendees,
+  //   });
+  //   setIsDialogOpen(true);
+  // };
 
   // const handleDeleteEvent = async (event: EventApi) => {
   //   if (window.confirm(`Are you sure you want to delete the event "${event.title}"?`)) {
@@ -164,16 +164,16 @@ const Calendar: React.FC = () => {
   //   }
   // };
 
-  const handleDeleteEvent = (event: EventApi) => {
-    if (
-      window.confirm(
-        `¿Estás seguro de que deseas eliminar el evento "${event.title}"?`
-      )
-    ) {
-      const updatedEvents = currentEvents.filter((e) => e.id !== event.id);
-      setCurrentEvents(updatedEvents);
-    }
-  };
+  // const handleDeleteEvent = (event: EventApi) => {
+  //   if (
+  //     window.confirm(
+  //       `¿Estás seguro de que deseas eliminar el evento "${event.title}"?`
+  //     )
+  //   ) {
+  //     const updatedEvents = currentEvents.filter((e) => e.id !== event.id);
+  //     setCurrentEvents(updatedEvents);
+  //   }
+  // };
 
   return (
     <div className="pt-20 pl-5 pr-5 bg-white dark:bg-gray-800 min-h-screen">
@@ -285,11 +285,10 @@ const Calendar: React.FC = () => {
             </button>
             <ul className="mx-2 grid gap-4 w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {paginatedEvents.map((event: EventApi) => (
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  onEdit={() => handleEditEvent(event)}
-                  onDelete={() => handleDeleteEvent(event)}
+                <EventCard 
+                key={event.id} event={event} 
+                onEdit={(event) => console.log("Editar", event)} 
+                onDelete={(event) => console.log("Eliminar", event)} 
                 />
               ))}
             </ul>
