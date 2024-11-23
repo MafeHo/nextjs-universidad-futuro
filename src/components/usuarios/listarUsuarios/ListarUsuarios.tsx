@@ -27,7 +27,7 @@ const ListarUsuarios: React.FC = () => {
       try {
         usersService.getUsers().then((data: Usuario[]) => {
           if (data.length === 0) {
-            alert("No trae la información de los usuarios");
+            console.log("No trae la información de los usuarios");
           } else {
             setUsuarios(data);
           }

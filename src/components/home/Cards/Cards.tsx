@@ -6,6 +6,7 @@ import LogicService from 'app/services/logicService'
 import useEventsStore from 'app/stores/useEventsStore'
 import useSecurityStore from 'app/stores/useSecurityStore'
 import { useEffect, useState } from 'react'
+import Swal from "sweetalert2";
 
 export default function Cards() {
     const { parseToEventApi } = useEventsStore()
@@ -21,13 +22,29 @@ export default function Cards() {
     const handleInscription = async (event: EventApi) => {
         console.log('Inscribirse al evento:', event.title)
         if (!user) {
-            alert('Debes iniciar sesión para inscribirte a un evento')
-            return
+            Swal.fire({
+                title: "Acción requerida",
+                text: "Debes iniciar sesión para inscribirte a un evento.",
+                icon: "warning",
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+              });
+              return;
         }
 
         if (!user.correo) {
-            alert('El correo del usuario no está disponible')
-            return
+            Swal.fire({
+                title: "Información faltante",
+                text: "El correo del usuario no está disponible.",
+                icon: "error",
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+              });
+              return;
         }
         LogicService.getParticipantIdByEmail(user.correo).then((participante) => {
             console.log('====================================')
@@ -46,8 +63,16 @@ export default function Cards() {
                     : null
         }
         if (!participantArr || !participantId) {
-            alert('No se encontró el participante')
-            return
+            Swal.fire({
+                title: "Error",
+                text: "No se encontró el participante.",
+                icon: "error",
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+              });
+              return;
         }
 
         let inscription = {
@@ -57,7 +82,15 @@ export default function Cards() {
         }
 
         await LogicService.inscriptionToEvent(inscription).then(() => {
-            alert('Inscripción exitosa')
+            Swal.fire({
+                title: "Inscripción exitosa",
+                text: `Te has inscrito al evento: ${event.title}`,
+                icon: "success",
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+              });
         })
     }
 

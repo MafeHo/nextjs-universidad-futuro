@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation' // Importa useRouter
 import SecurityService from 'app/services/securityService'
 import useSecurityStore from 'app/stores/useSecurityStore'
 import { TwoFactorResponseModel } from 'app/models/twoFactorResponse.model'
+import Swal from "sweetalert2"
 
 export const DobleFactor = () => {
     const router = useRouter() // Define router
@@ -70,15 +71,32 @@ export const DobleFactor = () => {
             codeEntered === undefined ||
             codeEntered.length < 4
         ) {
-            alert('Debe ingresar el código')
+            Swal.fire({
+                title: "Código requerido",
+                text: "Debe ingresar el código completo.",
+                icon: "warning",
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+              });
+              return;
         }
 
         // Aquí podrías agregar la lógica de verificación del código
 
         try {
             if (user == null) {
-                alert('No se ha iniciado sesión')
-                return
+                Swal.fire({
+                    title: "Sesión no iniciada",
+                    text: "No se ha iniciado sesión.",
+                    icon: "error",
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                  });
+                  return;
             }
             let body = {
                 usuarioId: user._id,
@@ -99,11 +117,27 @@ export const DobleFactor = () => {
                         // Redirige al usuario a la página de inicio después de verificar
                         router.push('/') // Redirecciona a la página de inicio
                     } else {
-                        alert('El codigo no es valido')
+                        Swal.fire({
+                            title: "Código inválido",
+                            text: "El código ingresado no es válido.",
+                            icon: "error",
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                          });
                     }
                 })
                 .catch((error) => {
-                    alert(error.message)
+                    Swal.fire({
+                        title: "Error",
+                        text: error.message,
+                        icon: "error",
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                      });
                 })
         } catch (error) {
             console.error('Error verificando el código:', error)

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Swal from "sweetalert2";
 
 export const CambioContraseña = () => {
     const minLengthPassWord = 8
@@ -49,11 +50,35 @@ export const CambioContraseña = () => {
             return
         }
 
-        setError('')
+        setError('');
+        try {
         // Aquí puedes manejar el envío del formulario
-        console.log('Nueva contraseña:', formData.nuevaClave)
-        alert('Contraseña cambiada exitosamente.')
-        router.push('/login') // Redirige al login
+        console.log('Nueva contraseña:', formData.nuevaClave);
+
+        await Swal.fire({
+            title: "Contraseña cambiada",
+            text: "Tu contraseña ha sido cambiada exitosamente.",
+            icon: "success",
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+        });
+
+        router.push('/login'); // Redirige al login
+        } catch (error) {
+        console.error("Error al cambiar la contraseña:", error);
+        Swal.fire({
+            title: "Error",
+            text: "Ocurrió un problema al cambiar la contraseña.",
+            icon: "error",
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+        });
+}
+
     }
 
     return (

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import Swal from "sweetalert2";
 
 export const Codigo = () => {
     const router = useRouter()
@@ -29,16 +30,25 @@ export const Codigo = () => {
     }
 
     const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault()
-        const code = digits.join('')
-        console.log('Código ingresado:', code)
-        // Aquí puedes manejar la lógica para verificar el código
+        event.preventDefault();
+        const code = digits.join('');
+        console.log('Código ingresado:', code);
+      
         if (code.length === 4) {
-            router.push('/cambio') // Redirige a la página para cambiar la contraseña
+          router.push('/cambio'); // Redirige a la página para cambiar la contraseña
         } else {
-            alert('Por favor, completa los 4 dígitos.')
+          Swal.fire({
+            title: "Código incompleto",
+            text: "Por favor, completa los 4 dígitos.",
+            icon: "warning",
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
         }
-    }
+      };
+      
 
     return (
         <div className='min-h-screen bg-white dark:bg-gray-800 flex items-center justify-center pt-16'>

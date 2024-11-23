@@ -2,6 +2,7 @@
 import React from 'react';
 import { EventApi } from '@fullcalendar/core';
 import { formatDate } from "@fullcalendar/core";
+import Swal from "sweetalert2";
 
 interface EventCardProps {
   event: EventApi;
@@ -26,12 +27,23 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => (
       {formatDate(event.start!, { year: "numeric", month: "short", day: "numeric" })}
     </label>
     <div className="mt-4">
-      <button
+    <button
         className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center"
-        onClick={() => alert(`Inscripción en el evento: ${event.title}`)}
+        onClick={() =>
+          Swal.fire({
+            title: "Inscripción confirmada",
+            text: `Te has inscrito en el evento: ${event.title}`,
+            icon: "success",
+            timer: 3000, // Tiempo de cierre automático (3 segundos)
+            timerProgressBar: true, // Muestra la barra de progreso
+            showConfirmButton: false, // Oculta el botón de confirmación
+            allowOutsideClick: false, // Impide cerrar haciendo clic fuera
+          })
+        }
       >
         Inscribirse
       </button>
+
     </div>
   </li>
 );

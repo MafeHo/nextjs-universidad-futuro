@@ -8,6 +8,7 @@ import useSecurityStore from "app/stores/useSecurityStore";
 import { DateSelectArg } from "@fullcalendar/core/index.js";
 import LogicService from "app/services/logicService";
 import { EventoModel } from "app/models/evento.model";
+import Swal from "sweetalert2"
 
 interface CreateEventProps {
   isDialogOpen: boolean;
@@ -73,10 +74,18 @@ const CreateEvent: React.FC<CreateEventProps> = ({
 
       // Validar que la fecha de inicio sea menor a la fecha de fin
       if (startDateTime >= endDateTime) {
-        alert("La fecha de inicio debe ser menor a la fecha de fin");
+        Swal.fire({
+          title: "Fecha inválida",
+          text: "La fecha de inicio debe ser menor a la fecha de fin.",
+          icon: "warning",
+          timer: 3000, // Se cierra automáticamente después de 3 segundos
+          timerProgressBar: true, // Muestra una barra de progreso mientras el temporizador avanza
+          showConfirmButton: false, // Oculta el botón de confirmación
+          allowOutsideClick: false, // Evita que se cierre al hacer clic fuera
+        });
         return;
       }
-
+      
       const new_event: EventoModel = {
         titulo: newEvent.title,
         descripcion: newEvent.description,
@@ -92,11 +101,27 @@ const CreateEvent: React.FC<CreateEventProps> = ({
       let event = null;
       try {
         if (!user) {
-          alert("Debes iniciar sesión para crear un evento");
+          Swal.fire({
+            title: "Acción requerida",
+            text: "Debes iniciar sesión para crear un evento.",
+            icon: "warning",
+            timer: 3000, // Tiempo de cierre automático
+            timerProgressBar: true, // Muestra la barra de progreso
+            showConfirmButton: false, // Oculta el botón de confirmación
+            allowOutsideClick: false, // Impide cerrar haciendo clic fuera
+          });
           return;
         }
         if (!user.correo) {
-          alert("El correo del usuario no está disponible");
+          Swal.fire({
+            title: "Información faltante",
+            text: "El correo del usuario no está disponible.",
+            icon: "error",
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
           return;
         }
         const organizerArr = await LogicService.getOrganizerIdByEmail(
@@ -110,14 +135,30 @@ const CreateEvent: React.FC<CreateEventProps> = ({
               : null;
         }
         if (!organizerArr || !organizerId) {
-          alert("No se encontró el organizador");
+          Swal.fire({
+            title: "Error",
+            text: "No se encontró el organizador.",
+            icon: "error",
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
           return;
         }
         new_event.organizadorId = organizerId;
         event = await LogicService.createEvent(new_event);
       } catch (error) {
         console.error("Error creating event:", error);
-        alert("Error al crear el evento. Inténtalo de nuevo.");
+        Swal.fire({
+          title: "Error",
+          text: "Error al crear el evento. Inténtalo de nuevo.",
+          icon: "error",
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+        });
         return;
       }
 

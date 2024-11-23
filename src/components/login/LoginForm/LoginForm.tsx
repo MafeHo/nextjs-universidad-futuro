@@ -7,6 +7,7 @@ import MD5 from 'crypto-js/md5'
 import { UsuarioModel } from 'app/models/usuario.model'
 import useSecurityStore from 'app/stores/useSecurityStore'
 import SecurityService from 'app/services/securityService'
+import Swal from "sweetalert2";
 
 export const LoginForm = () => {
     const router = useRouter()
@@ -36,9 +37,15 @@ export const LoginForm = () => {
         }
         SecurityService.login(credentials).then((data: UsuarioModel) => {
             if (data._id == undefined || data._id == null) {
-                alert(
-                    'Credenciales incorrectas o falta la validacion del correo electronico'
-                )
+                Swal.fire({
+                    title: "Error de autenticación",
+                    text: "Credenciales incorrectas o falta la validación del correo electrónico.",
+                    icon: "warning",
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                  });
             } else {
                 console.log('====================================')
                 console.log(data)

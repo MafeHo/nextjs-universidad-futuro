@@ -3,6 +3,7 @@
 import LogicService from 'app/services/logicService'
 import useEventsStore from 'app/stores/useEventsStore'
 import { useState } from 'react'
+import Swal from "sweetalert2"
 
 export const Filtro = () => {
     const { my_events, setMyEvents, parseToEventApi, setParsedEvents } =
@@ -25,8 +26,18 @@ export const Filtro = () => {
 
     const handleFilter = () => {
         const whereConditions = []
-        if (!tematica && !facultad && !tipoEvento)
-            return alert('Debes seleccionar al menos un filtro')
+        if (!tematica && !facultad && !tipoEvento) {
+            Swal.fire({
+              title: "Filtros requeridos",
+              text: "Debes seleccionar al menos un filtro.",
+              icon: "warning",
+              timer: 3000,
+              timerProgressBar: true,
+              showConfirmButton: false,
+              allowOutsideClick: false,
+            });
+            return;
+          }
         if (tematica) whereConditions.push({ tematica })
         if (facultad) whereConditions.push({ facultad })
         if (tipoEvento) whereConditions.push({ tipoEvento })
