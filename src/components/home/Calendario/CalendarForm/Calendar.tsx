@@ -235,7 +235,11 @@ const Calendar: React.FC = () => {
 
             {currentEvents.length > 0 &&
               currentEvents.map((event: EventApi) => (
-                <EventCard key={event.id} event={event} />
+                <EventCard 
+                key={event.id} event={event} 
+                onEdit={(event) => console.log("Editar", event)} 
+                onDelete={(event) => console.log("Eliminar", event)} 
+                />
               ))}
           </ul>
         </div>
