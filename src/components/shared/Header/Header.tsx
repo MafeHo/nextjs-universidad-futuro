@@ -38,6 +38,17 @@ export const Header = () => {
                             Calendario
                         </Link>
                         <Link
+                            href='/eventBarChart'
+                            className='text-white hover:text-blue-500'>
+                            Gráficas
+                        </Link>
+                        <Link
+                            href='/dashboard'
+                            className='text-white hover:text-blue-500'
+                        >
+                            Dashboard
+                        </Link>
+                        <Link
                             href='/listarUsuarios'
                             className='text-white hover:text-blue-500'>
                             Usuarios

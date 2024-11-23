@@ -10,6 +10,7 @@ import LogicService from "app/services/logicService";
 import { EventoModel } from "app/models/evento.model";
 import Swal from "sweetalert2"
 
+
 interface CreateEventProps {
   isDialogOpen: boolean;
   setIsDialogOpen: (isOpen: boolean) => void;
