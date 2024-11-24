@@ -13,8 +13,8 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const AttendanceChart = () => {
-  const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun"];
+export const AttendanceChart = () => {
+  const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
   const data = {
     labels: meses,
     datasets: [
@@ -44,5 +44,3 @@ const AttendanceChart = () => {
     </div>
   );
 };
-
-export default AttendanceChart;
