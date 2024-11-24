@@ -5,23 +5,26 @@ const SECURITY_URL = SecurityConfig.SECURITY_URL
 
 const getUsers = async () => {
     try {
-        const response = await axios.get(SECURITY_URL + 'usuario', {
-            headers: {
-                'Content-Type': 'application/json',
-                accept: 'application/json',
-            },
-        })
+        const response = await axios.get(
+            SECURITY_URL + 'usuario?filter={ "include": [ {"relation": "rol"}]}',
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
         return response.data
     } catch (error) {
         console.error('Error creating user:', error)
         throw error
     }
-};
+}
 
 const usersService: {
-    getUsers: () => Promise<any>;
+    getUsers: () => Promise<any>
 } = {
-    getUsers
+    getUsers,
 }
 
 export default usersService

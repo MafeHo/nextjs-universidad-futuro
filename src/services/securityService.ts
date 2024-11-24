@@ -21,9 +21,9 @@ const register = async (userData: UsuarioModel) => {
     }
 }
 
-const getRole = async (roleId: string) => {
+const getRole = async (rolId: string) => {
     try {
-        const response = await axios.get(SECURITY_URL + 'rol/' + roleId, {
+        const response = await axios.get(SECURITY_URL + 'rol/' + rolId, {
             headers: {
                 'Content-Type': 'application/json',
                 accept: 'application/json',

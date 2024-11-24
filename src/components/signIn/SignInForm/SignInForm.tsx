@@ -58,11 +58,11 @@ export const SignInForm = () => {
             setError('Las contraseñas no coinciden')
             return
         }
-        const passwordError = validatePassword(formData.clave)
-        if (passwordError) {
-            setError(passwordError)
-            return
-        }
+        // const passwordError = validatePassword(formData.clave)
+        // if (passwordError) {
+        //     setError(passwordError)
+        //     return
+        // }
 
         setError('')
         // Aquí puedes manejar el envío del formulario

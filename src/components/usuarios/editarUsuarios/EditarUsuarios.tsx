@@ -1,17 +1,7 @@
 "use client";
 
+import { Usuario } from "app/models/usuario.model";
 import React, { useState } from "react";
-
-interface Usuario {
-  _id: string;
-  primerNombre: string;
-  segundoNombre?: string;
-  primerApellido: string;
-  segundoApellido?: string;
-  celular?: string;
-  correo: string;
-  roleId: string;
-}
 
 interface EditarUsuarioProps {
   usuario: Usuario;
@@ -79,8 +69,8 @@ const EditarUsuario: React.FC<EditarUsuarioProps> = ({
             className="w-full border border-gray-300 rounded px-3 py-2 mb-4 text-black dark:text-gray-600"
           />
           <select
-            name="roleId"
-            value={formValues.roleId}
+            name="rolId"
+            value={formValues.rolId}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded px-3 py-2 mb-4 text-black dark:text-gray-600"
           >
