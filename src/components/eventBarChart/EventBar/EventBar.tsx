@@ -11,7 +11,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import LogicService from "app/services/logicService"; // Asegúrate de que sea el servicio correcto
+import LogicService from "app/services/logicService";
 import { EventoModel } from "app/models/evento.model";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -22,14 +22,14 @@ export const EventBar = () => {
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        const events = await LogicService.getEvents(); // Asegúrate de que este método sea correcto
+        const events = await LogicService.getEvents();
         console.log("Eventos obtenidos:", events);
         const counts = Array(12).fill(0);
 
-        // Calcula la cantidad de eventos por mes
+        // cantidad de eventos por mes
         events.forEach((event: EventoModel) => {
           if (event.fechaInicio) {
-            const eventDate = new Date(event.fechaInicio); // Ajusta si el campo tiene otro nombre
+            const eventDate = new Date(event.fechaInicio); 
             const month = eventDate.getMonth();
             counts[month]++;
           }
@@ -45,18 +45,18 @@ export const EventBar = () => {
   }, []);
 
   const meses = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
+    "Ene",
+    "Feb",
+    "Mar",
+    "Abr",
+    "May",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dic",
   ];
 
   const data = {
@@ -91,8 +91,8 @@ export const EventBar = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4">
-      <h2 className="text-xl font-bold text-center mb-4">Cantidad de eventos por mes</h2>
+    <div className="bg-white shadow rounded-lg p-6">
+      <h2 className="text-lg font-bold text-gray-600 mb-4">Cantidad de eventos por mes</h2>
       <Bar data={data} options={options} />
     </div>
   );
