@@ -7,7 +7,7 @@ import MD5 from 'crypto-js/md5'
 import { UsuarioModel } from 'app/models/usuario.model'
 import useSecurityStore from 'app/stores/useSecurityStore'
 import SecurityService from 'app/services/securityService'
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2'
 
 export const LoginForm = () => {
     const router = useRouter()
@@ -38,14 +38,14 @@ export const LoginForm = () => {
         SecurityService.login(credentials).then((data: UsuarioModel) => {
             if (data._id == undefined || data._id == null) {
                 Swal.fire({
-                    title: "Error de autenticación",
-                    text: "Credenciales incorrectas o falta la validación del correo electrónico.",
-                    icon: "warning",
+                    title: 'Error de autenticación',
+                    text: 'Credenciales incorrectas.',
+                    icon: 'warning',
                     timer: 3000,
                     timerProgressBar: true,
                     showConfirmButton: false,
                     allowOutsideClick: false,
-                  });
+                })
             } else {
                 console.log('====================================')
                 console.log(data)
@@ -114,15 +114,15 @@ export const LoginForm = () => {
                     </div>
 
                     <div className='text-center'>
-                    <button
-                        type="button"
-                        onClick={handleForgotPasswordClick}
-                        className='text-white dark:text-gray-300'>
-                        ¿Olvidaste tu contraseña?
-                    </button>
+                        <button
+                            type='button'
+                            onClick={handleForgotPasswordClick}
+                            className='text-white dark:text-gray-300'>
+                            ¿Olvidaste tu contraseña?
+                        </button>
                     </div>
                 </form>
-                
+
                 <p className='text-center text-gray-600 dark:text-gray-300 mt-4'>
                     ¿Eres nuevo?{' '}
                     <Link href='/signIn' className='text-blue-600 underline'>

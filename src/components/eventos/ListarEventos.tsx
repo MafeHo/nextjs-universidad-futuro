@@ -35,8 +35,8 @@ export const ListarEventos = () => {
 
   const handleAsistance = async (event: EventApi) => {
     if (
-      (user?.roleId == SecurityConfig.ID_ROLE_PARTICIPANT ||
-        user?.roleId == SecurityConfig.ID_ROLE_ADMIN) &&
+      (user?.rolId == SecurityConfig.ID_ROLE_PARTICIPANT ||
+        user?.rolId == SecurityConfig.ID_ROLE_ADMIN) &&
       user.correo
     ) {
       const participantId = await LogicService.getParticipantIdByEmail(
