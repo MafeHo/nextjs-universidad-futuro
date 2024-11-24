@@ -37,12 +37,29 @@ const updateUser = async (usuario: UsuarioModel, id: string) => {
     }
 }
 
+const deleteUser = async (id: string) => {
+    try {
+        const response = await axios.delete(SECURITY_URL + 'usuario/' + id, {
+            headers: {
+                'Content-Type': 'application/json',
+                accept: 'application/json',
+            },
+        })
+        return response
+    } catch (error) {
+        console.error('Error deleting user:', error)
+        throw error
+    }
+}
+
 const UsersService: {
     getUsers: () => Promise<any>
     updateUser: (usuario: UsuarioModel, id: string) => Promise<any>
+    deleteUser: (id: string) => Promise<any>
 } = {
     getUsers,
     updateUser,
+    deleteUser,
 }
 
 export default UsersService

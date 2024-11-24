@@ -79,29 +79,24 @@ const ListarUsuarios: React.FC = () => {
         }
         const id = updatedUsuario._id
         UsersService.updateUser(newUser, id).then(() => {
-            const temp_users = usuarios.map((user) => {
-                if (user._id === updatedUsuario._id) {
-                    if (user.rolId !== updatedUsuario.rolId) {
-                        updatedUsuario.rol =
-                            updatedUsuario.rolId === SecurityConfig.ID_ROLE_ADMIN
-                                ? { nombre: 'Administrador' }
-                                : updatedUsuario.rolId ===
-                                  SecurityConfig.ID_ROLE_ORGANIZER
-                                ? { nombre: 'Organizador' }
-                                : { nombre: 'Participante' }
+            setUsuarios((prevUsuarios) =>
+                prevUsuarios.map((user) => {
+                    if (user._id === updatedUsuario._id) {
+                        if (user.rolId !== updatedUsuario.rolId) {
+                            updatedUsuario.rol =
+                                updatedUsuario.rolId === SecurityConfig.ID_ROLE_ADMIN
+                                    ? { nombre: 'Administrador' }
+                                    : updatedUsuario.rolId ===
+                                      SecurityConfig.ID_ROLE_ORGANIZER
+                                    ? { nombre: 'Organizador' }
+                                    : { nombre: 'Participante' }
+                        }
+                        return updatedUsuario
                     }
-                    return updatedUsuario
-                }
-                return user
-            })
-            setUsuarios(temp_users)
+                    return user
+                })
+            )
             setIsDialogOpen(false)
-            // setUsuarios((prevUsuarios) =>
-            //     prevUsuarios.map((user) =>
-            //         user._id === updatedUsuario._id ? updatedUsuario : user
-            //     )
-            // )
-            // setIsDialogOpen(false)
         })
     }
 
@@ -119,8 +114,8 @@ const ListarUsuarios: React.FC = () => {
 
         if (result.isConfirmed) {
             try {
-                const response = await fetch(`/usuario/${id}`, { method: 'DELETE' })
-                if (response.ok) {
+                const response = await UsersService.deleteUser(id)
+                if (response.status === 204) {
                     Swal.fire(
                         'Eliminado!',
                         'El usuario ha sido eliminado.',
