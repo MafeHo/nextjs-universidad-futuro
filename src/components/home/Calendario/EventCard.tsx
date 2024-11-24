@@ -136,6 +136,20 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
     }
   };
 
+  // Función para manejar el envío de recordatorio
+  const handleReminder = () => {
+    // Aquí puedes añadir validaciones si es necesario
+    Swal.fire({
+      title: "Recordatorio enviado",
+      text: "El recordatorio se ha enviado a todos los inscritos.",
+      icon: "success",
+      timer: 3000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+    });
+  };
+
   return (
     <li className="border border-gray-200 shadow px-3 py-2 rounded-md text-blue-800 dark:text-white bg-white dark:bg-gray-900">
       <div className="font-bold">{event.title}</div>
@@ -171,6 +185,12 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
       </div>
 
       <div className="mt-4 flex justify-center space-x-4">
+      <button
+          className="p-2 bg-green-500 hover:bg-green-400 text-white rounded-md"
+          onClick={handleReminder}
+        >
+          Recordatorio
+        </button>
         <button
           className="p-2 bg-blue-500 hover:bg-blue-400 text-white rounded-md"
           onClick={handleEdit} // Llama a la función de edición

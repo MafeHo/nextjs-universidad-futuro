@@ -1,5 +1,6 @@
 'use client'; 
 import { useState } from 'react';
+import Swal from "sweetalert2";
 
 export const FormSatisfaccion = ({ closeModal }: { closeModal: () => void }) => {
   const [formData, setFormData] = useState({
@@ -18,7 +19,13 @@ export const FormSatisfaccion = ({ closeModal }: { closeModal: () => void }) => 
       e.preventDefault();
       console.log('Datos enviados:', formData);
 
-      alert('Encuesta enviada con éxito. ¡Gracias por tu participación!');
+      Swal.fire({
+        icon: 'success',
+        title: 'Encuesta Enviada',
+        text: '¡Gracias por tu participación!',
+        confirmButtonText: 'Aceptar',
+      });
+
       closeModal();
   };
 
