@@ -84,7 +84,10 @@ const EditarUsuario: React.FC<EditarUsuarioProps> = ({
                         name='rolId'
                         value={formValues.rolId}
                         onChange={handleChange}
-                        className='w-full border border-gray-300 rounded px-3 py-2 mb-4 text-black dark:text-gray-600'>
+                        className='w-full border border-gray-300 rounded px-3 py-2 mb-4 text-black dark:text-gray-600'
+                        disabled={
+                            user?.rolId === SecurityConfig.ID_ROLE_PARTICIPANT
+                        }>
                         <option value={SecurityConfig.ID_ROLE_ORGANIZER}>
                             Organizador
                         </option>
