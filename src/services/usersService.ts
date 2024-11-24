@@ -1,4 +1,5 @@
 import { SecurityConfig } from 'app/config/securityConfig'
+import { UsuarioModel } from 'app/models/usuario.model'
 import axios from 'axios'
 
 const SECURITY_URL = SecurityConfig.SECURITY_URL
@@ -21,10 +22,27 @@ const getUsers = async () => {
     }
 }
 
-const usersService: {
-    getUsers: () => Promise<any>
-} = {
-    getUsers,
+const updateUser = async (usuario: UsuarioModel, id: string) => {
+    try {
+        const response = await axios.put(SECURITY_URL + 'usuario/' + id, usuario, {
+            headers: {
+                'Content-Type': 'application/json',
+                accept: 'application/json',
+            },
+        })
+        return response.data
+    } catch (error) {
+        console.error('Error updating user:', error)
+        throw error
+    }
 }
 
-export default usersService
+const UsersService: {
+    getUsers: () => Promise<any>
+    updateUser: (usuario: UsuarioModel, id: string) => Promise<any>
+} = {
+    getUsers,
+    updateUser,
+}
+
+export default UsersService

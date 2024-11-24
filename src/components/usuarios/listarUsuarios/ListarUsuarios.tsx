@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import { useRouter } from 'next/navigation'
-import usersService from 'app/services/usersService'
+import UsersService from 'app/services/usersService'
 import EditarUsuario from '../editarUsuarios/EditarUsuarios'
 import { SecurityConfig } from 'app/config/securityConfig'
 import { Usuario } from 'app/models/usuario.model'
@@ -18,15 +18,15 @@ const ListarUsuarios: React.FC = () => {
     useEffect(() => {
         const fetchUsuarios = async () => {
             try {
-                const users = await usersService
-                    .getUsers()
-                    .then(async (data: Usuario[]) => {
+                const users = await UsersService.getUsers().then(
+                    async (data: Usuario[]) => {
                         if (data.length === 0) {
                             console.log('No trae la información de los usuarios')
                         } else {
                             return filterUsersByRole(data)
                         }
-                    })
+                    }
+                )
                 if (users) {
                     console.log('Usuarios:', users)
                     setUsuarios(users)
@@ -41,28 +41,68 @@ const ListarUsuarios: React.FC = () => {
 
     const filterUsersByRole = async (data: Usuario[]) => {
         let users: Usuario[] = []
-        if (SecurityConfig.ID_ROLE_ADMIN === user?.rolId) {
-            users = data
+        switch (user?.rolId) {
+            case SecurityConfig.ID_ROLE_ADMIN:
+                users = data
+                break
+            case SecurityConfig.ID_ROLE_ORGANIZER:
+                users = data.filter(
+                    (user) =>
+                        user.rolId !== SecurityConfig.ID_ROLE_ADMIN &&
+                        user.rolId !== SecurityConfig.ID_ROLE_ORGANIZER
+                )
+                break
+            case SecurityConfig.ID_ROLE_PARTICIPANT:
+                const userId = user._id
+                users = data.filter((user) => user._id === userId)
+                break
+            default:
+                break
         }
-        if (SecurityConfig.ID_ROLE_ORGANIZER === user?.rolId) {
-            users = data.filter(
-                (user) =>
-                    user.rolId !== SecurityConfig.ID_ROLE_ADMIN &&
-                    user.rolId !== SecurityConfig.ID_ROLE_ORGANIZER
-            )
-        }
-        if (SecurityConfig.ID_ROLE_PARTICIPANT === user?.rolId) {
-            const userId = user._id
-            users = data.filter((user) => user._id === userId)
-        }
-        console.log('Usuarios:', users, user)
-
         return users
     }
 
-    const handleEdit = (usuario: Usuario) => {
+    const handleEditAction = (usuario: Usuario) => {
         setSelectedUsuario(usuario)
         setIsDialogOpen(true)
+    }
+
+    const handleEditUser = (updatedUsuario: Usuario) => {
+        let newUser = {
+            primerNombre: updatedUsuario.primerNombre,
+            segundoNombre: updatedUsuario.segundoNombre,
+            primerApellido: updatedUsuario.primerApellido,
+            segundoApellido: updatedUsuario.segundoApellido,
+            correo: updatedUsuario.correo,
+            celular: updatedUsuario.celular,
+            rolId: updatedUsuario.rolId,
+        }
+        const id = updatedUsuario._id
+        UsersService.updateUser(newUser, id).then(() => {
+            const temp_users = usuarios.map((user) => {
+                if (user._id === updatedUsuario._id) {
+                    if (user.rolId !== updatedUsuario.rolId) {
+                        updatedUsuario.rol =
+                            updatedUsuario.rolId === SecurityConfig.ID_ROLE_ADMIN
+                                ? { nombre: 'Administrador' }
+                                : updatedUsuario.rolId ===
+                                  SecurityConfig.ID_ROLE_ORGANIZER
+                                ? { nombre: 'Organizador' }
+                                : { nombre: 'Participante' }
+                    }
+                    return updatedUsuario
+                }
+                return user
+            })
+            setUsuarios(temp_users)
+            setIsDialogOpen(false)
+            // setUsuarios((prevUsuarios) =>
+            //     prevUsuarios.map((user) =>
+            //         user._id === updatedUsuario._id ? updatedUsuario : user
+            //     )
+            // )
+            // setIsDialogOpen(false)
+        })
     }
 
     const handleDelete = async (id: string) => {
@@ -154,7 +194,7 @@ const ListarUsuarios: React.FC = () => {
                                     </td>
                                     <td className='border border-gray-300 px-4 py-2 text-sm flex gap-2 justify-center'>
                                         <button
-                                            onClick={() => handleEdit(usuario)}
+                                            onClick={() => handleEditAction(usuario)}
                                             className='bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 mr-2'>
                                             Editar
                                         </button>
@@ -182,16 +222,7 @@ const ListarUsuarios: React.FC = () => {
                         usuario={selectedUsuario}
                         isOpen={isDialogOpen}
                         onClose={() => setIsDialogOpen(false)}
-                        onUpdate={(updatedUsuario) => {
-                            setUsuarios((prevUsuarios) =>
-                                prevUsuarios.map((user) =>
-                                    user._id === updatedUsuario._id
-                                        ? updatedUsuario
-                                        : user
-                                )
-                            )
-                            setIsDialogOpen(false)
-                        }}
+                        onUpdate={handleEditUser}
                     />
                 )}
             </div>
