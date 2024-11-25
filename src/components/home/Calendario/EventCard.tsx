@@ -12,8 +12,7 @@ interface EventCardProps {
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
-
-  const {user } = useSecurityStore()
+    const { user } = useSecurityStore()
     // Función para manejar la edición del evento
     const handleEdit = async () => {
         const { value: formValues } = await Swal.fire({
@@ -258,6 +257,20 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
         }
     }
 
+    // Función para manejar el envío de recordatorio
+    const handleReminder = () => {
+        // Aquí puedes añadir validaciones si es necesario
+        Swal.fire({
+            title: 'Recordatorio enviado',
+            text: 'El recordatorio se ha enviado a todos los inscritos.',
+            icon: 'success',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+        })
+    }
+
     return (
         <li className='border border-gray-200 shadow px-3 py-2 rounded-md text-blue-800 dark:text-white bg-white dark:bg-gray-900'>
             <div className='font-bold'>{event.title}</div>
@@ -304,22 +317,29 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
                     Inscribirse
                 </button>
             </div>
-        {user?.rolId === SecurityConfig.ID_ROLE_ADMIN || user?.rolId === SecurityConfig.ID_ROLE_ORGANIZER ? (
-          <div className='mt-4 flex justify-center space-x-4'>
-                <button
-                    className='p-2 bg-blue-500 hover:bg-blue-400 text-white rounded-md'
-                    onClick={handleEdit} // Llama a la función de edición
-                >
-                    Editar
-                </button>
-                <button
-                    className='p-2 bg-red-600 hover:bg-red-500 text-white rounded-md'
-                    onClick={handleDelete} // Llama a la función de eliminación
-                >
-                    Eliminar
-                </button>
-            </div>
-            ): null}
+
+            <button
+                className='p-2 bg-green-500 hover:bg-green-400 text-white rounded-md'
+                onClick={handleReminder}>
+                Recordatorio
+            </button>
+            {user?.rolId === SecurityConfig.ID_ROLE_ADMIN ||
+            user?.rolId === SecurityConfig.ID_ROLE_ORGANIZER ? (
+                <div className='mt-4 flex justify-center space-x-4'>
+                    <button
+                        className='p-2 bg-blue-500 hover:bg-blue-400 text-white rounded-md'
+                        onClick={handleEdit} // Llama a la función de edición
+                    >
+                        Editar
+                    </button>
+                    <button
+                        className='p-2 bg-red-600 hover:bg-red-500 text-white rounded-md'
+                        onClick={handleDelete} // Llama a la función de eliminación
+                    >
+                        Eliminar
+                    </button>
+                </div>
+            ) : null}
         </li>
     )
 }
