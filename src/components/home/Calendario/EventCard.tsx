@@ -127,6 +127,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
           value="${formatDate(event.start!, {
               hour: '2-digit',
               minute: '2-digit',
+              hour12: false,
           }).slice(0, 5)}"
         />
       </div>
@@ -140,6 +141,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
         value="${formatDate(event.end!, {
             hour: '2-digit',
             minute: '2-digit',
+            hour12: false,
         }).slice(0, 5)}"
       />
       </div>
@@ -198,6 +200,8 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
                     )
                     return false
                 }
+
+                console.log('horas', horaInicio, horaFin, event.start, event.end)
 
                 return {
                     titulo,
