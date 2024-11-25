@@ -303,7 +303,25 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
             <div className='mt-4'>
                 <button
                     className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center'
-                    onClick={() =>
+                    onClick={() => {
+                        if (!user) {
+                            Swal.fire({
+                                title: 'Por favor inicia sesión',
+                                text: 'Debes iniciar sesión para inscribirte en un evento.',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Iniciar sesión',
+                                cancelButtonText: 'Cancelar',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '/login'
+                                }
+                            })
+                            return
+                        }
+
                         Swal.fire({
                             title: 'Inscripción confirmada',
                             text: `Te has inscrito en el evento: ${event.title}`,
@@ -313,19 +331,18 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
                             showConfirmButton: false, // Oculta el botón de confirmación
                             allowOutsideClick: false, // Impide cerrar haciendo clic fuera
                         })
-                    }>
+                    }}>
                     Inscribirse
                 </button>
             </div>
-
-            <button
-                className='p-2 bg-green-500 hover:bg-green-400 text-white rounded-md'
-                onClick={handleReminder}>
-                Recordatorio
-            </button>
             {user?.rolId === SecurityConfig.ID_ROLE_ADMIN ||
             user?.rolId === SecurityConfig.ID_ROLE_ORGANIZER ? (
                 <div className='mt-4 flex justify-center space-x-4'>
+                    <button
+                        className='p-2 bg-green-500 hover:bg-green-400 text-white rounded-md'
+                        onClick={handleReminder}>
+                        Recordatorio
+                    </button>
                     <button
                         className='p-2 bg-blue-500 hover:bg-blue-400 text-white rounded-md'
                         onClick={handleEdit} // Llama a la función de edición
