@@ -117,10 +117,49 @@ const inscriptionToEvent = async (
     }
 }
 
+const editEvent = async (eventData: EventoModel): Promise<EventoModel> => {
+    try {
+        const response = await axios.put(
+            LOGIC_URL + `evento/${eventData.id}`,
+            eventData,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        console.error('Error editing event:', error)
+        throw error
+    }
+}
+
+const deleteEvent = async (eventId: number): Promise<void> => {
+    try {
+        const response = await axios.delete(
+            LOGIC_URL + `evento/${eventId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        console.error('Error deleting event:', error)
+        throw error
+    }
+}
+
 const LogicService = {
     getEvents,
     createEvent,
     filterEvents,
+    editEvent,
+    deleteEvent,
     inscriptionToEvent,
     getOrganizerIdByEmail,
     getParticipantIdByEmail,

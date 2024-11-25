@@ -1,7 +1,7 @@
 import { OrganizadorModel } from "./organizador.model"
 
 export class EventoModel {
-    id?: string
+    id?: number
     titulo?: string
     descripcion?:string
     lugar?: string

@@ -11,6 +11,7 @@ import { Filtro } from "app/components/filtros";
 import EventCard from "../EventCard";
 import LogicService from "app/services/logicService";
 import useEventsStore from "app/stores/useEventsStore";
+import { EventoModel } from "app/models/evento.model";
 
 const Calendar: React.FC = () => {
   const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
@@ -132,37 +133,64 @@ const Calendar: React.FC = () => {
     }
   };
 
-  // const handleEditEvent = (event: EventApi) => {
-  //   setNewEvent({
-  //     title: event.title,
-  //     description: event.extendedProps.description,
-  //     location: event.extendedProps.location,
-  //     organizer: event.extendedProps.organizer,
-  //     faculty: event.extendedProps.faculty,
-  //     topic: event.extendedProps.topic,
-  //     eventType: event.extendedProps.eventType,
-  //     startTime: event.start ? event.start.toISOString().slice(0, 16) : "",
-  //     endTime: event.end ? event.end.toISOString().slice(0, 16) : "",
-  //     maxCapacity: event.extendedProps.maxCapacity,
-  //     attendees: event.extendedProps.attendees,
-  //   });
-  //   setIsDialogOpen(true);
-  // };
+  const handleEditEvent = async (event: EventApi) => {
+    const my_event: EventoModel = {
+        id: Number(event.id),
+        titulo: event.title,
+        descripcion: event.extendedProps.description,
+        lugar: event.extendedProps.location,
+        organizadorId: event.extendedProps.organizerId,
+        facultad: event.extendedProps.faculty,
+        tematica: event.extendedProps.topic,
+        tipoEvento: event.extendedProps.eventType,
+        fechaInicio: event.start ? new Date(event.start).toISOString() : '',
+        fechaFinal: event.end ? new Date(event.end).toISOString() : '',
+        cupoInscripcion: event.extendedProps.maxCapacity,
+    }
+    await LogicService.editEvent(my_event)
+    setNewEvent({
+      title: event.title,
+      description: event.extendedProps.description,
+      location: event.extendedProps.location,
+      organizer: event.extendedProps.organizer,
+      faculty: event.extendedProps.faculty,
+      topic: event.extendedProps.topic,
+      eventType: event.extendedProps.eventType,
+      startTime: event.start ? event.start.toISOString().slice(0, 16) : "",
+      endTime: event.end ? event.end.toISOString().slice(0, 16) : "",
+      maxCapacity: event.extendedProps.maxCapacity,
+      attendees: event.extendedProps.attendees,
+    });
+    // setIsDialogOpen(true);
+  };
 
-  // const handleDeleteEvent = async (event: EventApi) => {
-  //   if (window.confirm(`Are you sure you want to delete the event "${event.title}"?`)) {
-  //     try {
-  //       await LogicService.deleteEvent(event.id);
-  //       const updatedEvents = currentEvents.filter((e) => e.id !== event.id);
-  //       setCurrentEvents(updatedEvents);
-  //       setEvents(updatedEvents);
-  //       setMyEvents(updatedEvents);
-  //       console.log(`Event "${event.title}" deleted successfully.`);
-  //     } catch (error) {
-  //       console.error("Error deleting event:", error);
-  //     }
-  //   }
-  // };
+  const handleDeleteEvent = async (event: EventApi) => {
+    if (window.confirm(`Are you sure you want to delete the event "${event.title}"?`)) {
+      try {
+        await LogicService.deleteEvent(Number(event.id));
+        const updatedEvents = currentEvents.filter((e) => e.id !== event.id);
+        setCurrentEvents(updatedEvents);
+        setEvents(updatedEvents);
+        const updatedEventoModels = updatedEvents.map(event => ({
+          id: Number(event.id),
+          titulo: event.title,
+          descripcion: event.extendedProps.description,
+          lugar: event.extendedProps.location,
+          organizadorId: event.extendedProps.organizerId,
+          facultad: event.extendedProps.faculty,
+          tematica: event.extendedProps.topic,
+          tipoEvento: event.extendedProps.eventType,
+          fechaInicio: event.start ? event.start.toISOString() : '',
+          fechaFinal: event.end ? event.end.toISOString() : '',
+          cupoInscripcion: event.extendedProps.maxCapacity,
+        }));
+        setMyEvents(updatedEventoModels);
+        console.log(`Event "${event.title}" deleted successfully.`);
+      } catch (error) {
+        console.error("Error deleting event:", error);
+      }
+    }
+  };
 
   // const handleDeleteEvent = (event: EventApi) => {
   //   if (
@@ -285,10 +313,10 @@ const Calendar: React.FC = () => {
             </button>
             <ul className="mx-2 grid gap-4 w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {paginatedEvents.map((event: EventApi) => (
-                <EventCard 
-                key={event.id} event={event} 
-                onEdit={(event) => console.log("Editar", event)} 
-                onDelete={(event) => console.log("Eliminar", event)} 
+                <EventCard
+                key={event.id} event={event}
+                onEdit={() => handleEditEvent(event)}
+                onDelete={() => handleDeleteEvent(event)}
                 />
               ))}
             </ul>

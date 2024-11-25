@@ -77,19 +77,25 @@ const ListarUsuarios: React.FC = () => {
             celular: updatedUsuario.celular,
             rolId: updatedUsuario.rolId,
         }
-        const id = updatedUsuario._id
-        UsersService.updateUser(newUser, id).then(() => {
+        UsersService.updateUser(newUser, updatedUsuario._id).then(() => {
             setUsuarios((prevUsuarios) =>
                 prevUsuarios.map((user) => {
                     if (user._id === updatedUsuario._id) {
                         if (user.rolId !== updatedUsuario.rolId) {
-                            updatedUsuario.rol =
+                            let rolNombre
+                            if (
                                 updatedUsuario.rolId === SecurityConfig.ID_ROLE_ADMIN
-                                    ? { nombre: 'Administrador' }
-                                    : updatedUsuario.rolId ===
-                                      SecurityConfig.ID_ROLE_ORGANIZER
-                                    ? { nombre: 'Organizador' }
-                                    : { nombre: 'Participante' }
+                            ) {
+                                rolNombre = 'Administrador'
+                            } else if (
+                                updatedUsuario.rolId ===
+                                SecurityConfig.ID_ROLE_ORGANIZER
+                            ) {
+                                rolNombre = 'Organizador'
+                            } else {
+                                rolNombre = 'Participante'
+                            }
+                            updatedUsuario.rol = { nombre: rolNombre }
                         }
                         return updatedUsuario
                     }
