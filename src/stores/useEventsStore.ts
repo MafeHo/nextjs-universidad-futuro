@@ -26,6 +26,7 @@ const useEventsStore = create<EventsStore>((set) => ({
                 extendedProps: {
                     description: event.descripcion,
                     location: event.lugar,
+                    organizadorId: event.organizadorId,
                     organizer:
                         event.organizador?.primerNombre +
                         ' ' +

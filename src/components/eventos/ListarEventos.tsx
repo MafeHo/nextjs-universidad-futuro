@@ -115,7 +115,7 @@ export const ListarEventos = () => {
     `
 
     ,
-        
+
       focusConfirm: false,
       preConfirm: () => {
         const titulo = (document.getElementById('swal-input1') as HTMLInputElement).value;

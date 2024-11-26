@@ -21,6 +21,7 @@ const Calendar: React.FC = () => {
         description: '',
         location: '',
         organizer: '',
+        organizerId: '',
         faculty: '',
         topic: '',
         eventType: '',
@@ -83,6 +84,7 @@ const Calendar: React.FC = () => {
             description: '',
             location: '',
             organizer: '',
+            organizerId: '',
             faculty: '',
             topic: '',
             eventType: '',
@@ -170,43 +172,53 @@ const Calendar: React.FC = () => {
                 : 0,
         }
         await LogicService.editEvent(my_event)
-        console.log('Evento editado:', my_event)
-        const updatedEvents = currentEvents.map((e) =>
-            e.id === id
-                ? {
-                      ...e,
-                      id: id,
-                      title: event.title,
-                      extendedProps: {
-                          ...e.extendedProps,
-                          description: event.extendedProps.description,
-                          location: event.extendedProps.location,
-                          organizerId: event.extendedProps.organizerId,
-                          faculty: event.extendedProps.faculty,
-                          topic: event.extendedProps.topic,
-                          eventType: event.extendedProps.eventType,
-                          maxCapacity: event.extendedProps.maxCapacity,
-                      },
-                      start: event.start,
-                      end: event.end,
-                  }
-                : e
-        )
-        // setCurrentEvents(updatedEvents)
-        // setEvents(updatedEvents)
-        // const updatedEventoModels = updatedEvents.map((event) => ({
-        //     id: Number(event.id),
-        //     titulo: event.title,
-        //     descripcion: event.extendedProps.description,
-        //     lugar: event.extendedProps.location,
-        //     organizadorId: event.extendedProps.organizerId,
-        //     facultad: event.extendedProps.faculty,
-        //     tematica: event.extendedProps.topic,
-        //     tipoEvento: event.extendedProps.eventType,
-        //     fechaInicio: event.start ? new Date(event.start).toISOString() : '',
-        //     fechaFinal: event.end ? new Date(event.end).toISOString() : '',
-        //     cupoInscripcion: event.extendedProps.maxCapacity,
+        console.log('Evento editado:', my_event, event)
+
+        // const updatedEvents = [...currentEvents]
+
+        // for (let i = 0; i < updatedEvents.length; i++) {
+        //     if (updatedEvents[i].id === id) {
+        //         updatedEvents[i] = {
+        //             ...updatedEvents[i],
+        //             id: id,
+        //             title: event.title,
+        //             extendedProps: {
+        //                 description: event.extendedProps?.description || '',
+        //                 location: event.extendedProps?.location || '',
+        //                 organizerId: event.extendedProps?.organizerId || '',
+        //                 faculty: event.extendedProps?.faculty || '',
+        //                 topic: event.extendedProps?.topic || '',
+        //                 eventType: event.extendedProps?.eventType || '',
+        //                 maxCapacity: event.extendedProps?.maxCapacity || 0,
+        //             },
+        //             start: event.start,
+        //             end: event.end,
+        //         }
+        //         break // Salir del bucle una vez encontrado
+        //     }
+        // }
+
+        // // Actualizar el estado con la copia modificada
+        // setTimeout(() => {
+        //     setCurrentEvents(updatedEvents)
+        //     setEvents(updatedEvents)
+        // }, 1000)
+
+        // // Transformar los eventos a un modelo simple
+        // const updatedEventoModels = updatedEvents.map((e) => ({
+        //     id: Number(e.id),
+        //     titulo: e.title,
+        //     descripcion: e.extendedProps?.description || '',
+        //     lugar: e.extendedProps?.location || '',
+        //     organizadorId: e.extendedProps?.organizerId || '',
+        //     facultad: e.extendedProps?.faculty || '',
+        //     tematica: e.extendedProps?.topic || '',
+        //     tipoEvento: e.extendedProps?.eventType || '',
+        //     fechaInicio: e.start ? new Date(e.start).toISOString() : '',
+        //     fechaFinal: e.end ? new Date(e.end).toISOString() : '',
+        //     cupoInscripcion: e.extendedProps?.maxCapacity || 0,
         // }))
+
         // setMyEvents(updatedEventoModels)
     }
 

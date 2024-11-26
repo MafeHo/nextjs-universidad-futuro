@@ -27,6 +27,7 @@ interface CreateEventProps {
             description: string
             location: string
             organizer: string
+            organizerId: string
             faculty: string
             topic: string
             eventType: string
@@ -170,6 +171,7 @@ const CreateEvent: React.FC<CreateEventProps> = ({
                     description: newEvent.description,
                     location: newEvent.location,
                     organizer: newEvent.organizer,
+                    organizerId: new_event.organizadorId,
                     faculty: newEvent.faculty,
                     topic: newEvent.topic,
                     eventType: newEvent.eventType,
@@ -407,12 +409,12 @@ const CreateEvent: React.FC<CreateEventProps> = ({
                         </form>
                     </>
                 )) ?? (
-                        <DialogHeader className='flex justify-start items-center h-full flex-col'>
-                            <DialogTitle>Por favor</DialogTitle>
-                            <p className='text-center'>
-                                Inicia sesión para crear un evento
-                            </p>
-                        </DialogHeader>
+                    <DialogHeader className='flex justify-start items-center h-full flex-col'>
+                        <DialogTitle>Por favor</DialogTitle>
+                        <p className='text-center'>
+                            Inicia sesión para crear un evento
+                        </p>
+                    </DialogHeader>
                 )}
             </DialogContent>
         </Dialog>
