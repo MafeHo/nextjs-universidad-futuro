@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { EventApi } from '@fullcalendar/core'
 import { formatDate } from '@fullcalendar/core'
 import Swal from 'sweetalert2'
 import useSecurityStore from 'app/stores/useSecurityStore'
 import { SecurityConfig } from 'app/config/securityConfig'
+import LogicService from 'app/services/logicService'
 
 interface EventCardProps {
     event: EventApi
@@ -13,6 +14,32 @@ interface EventCardProps {
 
 const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
     const { user } = useSecurityStore()
+
+    const [organizerId, setOrganizerId] = useState<number | null>(null)
+    const [participantId, setParticipantId] = useState<number | null>(null)
+
+    useEffect(() => {
+        if (user?.correo) {
+            LogicService.getOrganizerIdByEmail(user.correo).then((organizerArr) => {
+                setOrganizerId(
+                    Array.isArray(organizerArr) && organizerArr.length > 0
+                        ? organizerArr[0].id
+                        : null
+                )
+            })
+
+            LogicService.getParticipantIdByEmail(user.correo).then(
+                (participantArr) => {
+                    setParticipantId(
+                        Array.isArray(participantArr) && participantArr.length > 0
+                            ? participantArr[0].id
+                            : null
+                    )
+                }
+            )
+        }
+    }, [])
+
     // Función para manejar la edición del evento
     const handleEdit = async () => {
         const { value: formValues } = await Swal.fire({
@@ -261,6 +288,121 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
         }
     }
 
+    const handleInscription = async () => {
+        if (!user) {
+            Swal.fire({
+                title: 'Por favor inicia sesión',
+                text: 'Debes iniciar sesión para inscribirte en un evento.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Iniciar sesión',
+                cancelButtonText: 'Cancelar',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/login'
+                }
+            })
+            return
+        }
+
+        if (!user.correo) {
+            Swal.fire({
+                title: 'Información faltante',
+                text: 'El correo del usuario no está disponible.',
+                icon: 'error',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+            })
+            return
+        }
+
+        if (!participantId) {
+            Swal.fire({
+                title: 'Error',
+                text: 'No se encontró el participante.',
+                icon: 'error',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+            })
+            return
+        }
+
+        if (event.extendedProps.maxCapacity === event.extendedProps.attendees) {
+            Swal.fire({
+                title: 'Cupos llenos',
+                text: 'No hay cupos disponibles para este evento.',
+                icon: 'error',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+            })
+            return
+        }
+
+        const eventId = Number(event.id)
+
+        if (await LogicService.isParticipantInEvent(participantId, eventId)) {
+            Swal.fire({
+                title: 'Ya inscrito',
+                text: 'Ya estás inscrito en este evento.',
+                icon: 'info',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+            })
+            return
+        }
+
+        // if (event.extendedProps.organizadorId === organizerId) {
+        //     Swal.fire({
+        //         title: 'Organizador',
+        //         text: 'Eres el organizador de este evento.',
+        //         icon: 'info',
+        //         timer: 3000,
+        //         timerProgressBar: true,
+        //         showConfirmButton: false,
+        //         allowOutsideClick: false,
+        //     })
+        //     return
+        // }
+
+        if (!eventId) {
+            Swal.fire({
+                title: 'Error',
+                text: 'No se encontró el evento.',
+                icon: 'error',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+            })
+            return
+        }
+
+        const inscription = {
+            eventoId: eventId,
+            participanteId: participantId,
+        }
+        await LogicService.inscriptionToEvent(inscription)
+        Swal.fire({
+            title: 'Inscripción confirmada',
+            text: `Te has inscrito en el evento: ${event.title}`,
+            icon: 'success',
+            timer: 3000, // Tiempo de cierre automático (3 segundos)
+            timerProgressBar: true, // Muestra la barra de progreso
+            showConfirmButton: false, // Oculta el botón de confirmación
+            allowOutsideClick: false, // Impide cerrar haciendo clic fuera
+        })
+    }
+
     // Función para manejar el envío de recordatorio
     const handleReminder = () => {
         // Aquí puedes añadir validaciones si es necesario
@@ -282,9 +424,15 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
                 <p>Descripcion: {event.extendedProps.description}</p>
                 <p>Lugar: {event.extendedProps.location}</p>
                 <p>Organizador: {event.extendedProps.organizer}</p>
-                <p>Facultad: {event.extendedProps.faculty}</p>
-                <p>Temática: {event.extendedProps.topic}</p>
-                <p>Tipo de Evento: {event.extendedProps.eventType}</p>
+                {event.extendedProps.faculty ? (
+                    <p>Facultad: {event.extendedProps.faculty}</p>
+                ) : null}
+                {event.extendedProps.topic ? (
+                    <p>Tematica: {event.extendedProps.topic}</p>
+                ) : null}
+                {event.extendedProps.eventType ? (
+                    <p>Tipo de Evento: {event.extendedProps.eventType}</p>
+                ) : null}
                 <p>
                     Hora Inicio:{' '}
                     {formatDate(event.start!, {
@@ -302,43 +450,36 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
                     })}
                 </p>
                 <p>Cupos Máximos: {event.extendedProps.maxCapacity}</p>
+                {event.extendedProps.attendees &&
+                event.extendedProps?.maxCapacity ? (
+                    <p>
+                        Cupos disponibles:
+                        {event.extendedProps?.maxCapacity -
+                            event.extendedProps?.attendees}
+                    </p>
+                ) : null}
             </div>
 
-            <div className='mt-4'>
-                <button
-                    className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center'
-                    onClick={() => {
-                        if (!user) {
-                            Swal.fire({
-                                title: 'Por favor inicia sesión',
-                                text: 'Debes iniciar sesión para inscribirte en un evento.',
-                                icon: 'warning',
-                                showCancelButton: true,
-                                confirmButtonColor: '#3085d6',
-                                cancelButtonColor: '#d33',
-                                confirmButtonText: 'Iniciar sesión',
-                                cancelButtonText: 'Cancelar',
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.href = '/login'
-                                }
-                            })
-                            return
-                        }
-
-                        Swal.fire({
-                            title: 'Inscripción confirmada',
-                            text: `Te has inscrito en el evento: ${event.title}`,
-                            icon: 'success',
-                            timer: 3000, // Tiempo de cierre automático (3 segundos)
-                            timerProgressBar: true, // Muestra la barra de progreso
-                            showConfirmButton: false, // Oculta el botón de confirmación
-                            allowOutsideClick: false, // Impide cerrar haciendo clic fuera
-                        })
-                    }}>
-                    Inscribirse
-                </button>
-            </div>
+            {
+                // Si el usuario es administrador
+                user?.rolId === SecurityConfig.ID_ROLE_ADMIN ||
+                // Si el usuario es participante, muestra el botón de inscripción
+                user?.rolId === SecurityConfig.ID_ROLE_PARTICIPANT ||
+                // si no ha iniciado sesion muestra el boton de inscripcion
+                !user ||
+                // o si es organizador y no es el creador del evento
+                (user?.rolId === SecurityConfig.ID_ROLE_ORGANIZER &&
+                    organizerId &&
+                    organizerId !== event.extendedProps.organizadorId) ? (
+                    <div className='mt-4'>
+                        <button
+                            className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center'
+                            onClick={handleInscription}>
+                            Inscribirse
+                        </button>
+                    </div>
+                ) : null
+            }
             {user?.rolId === SecurityConfig.ID_ROLE_ADMIN ||
             user?.rolId === SecurityConfig.ID_ROLE_ORGANIZER ? (
                 <div className='mt-4 flex justify-center space-x-4'>

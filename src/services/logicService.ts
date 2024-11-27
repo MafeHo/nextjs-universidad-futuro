@@ -19,7 +19,7 @@ const createEvent = async (eventData: EventoModel): Promise<EventoModel> => {
     }
 }
 
-const getOrganizerIdByEmail = async (correo: string): Promise<number> => {
+const getOrganizerIdByEmail = async (correo: string): Promise<{ id: number }[]> => {
     try {
         const response = await axios.get(
             LOGIC_URL +
@@ -58,15 +58,12 @@ const getEvents = async (): Promise<EventoModel[]> => {
 
 const filterEvents = async (filter: string): Promise<EventoModel[]> => {
     try {
-        const response = await axios.get(
-            LOGIC_URL + `evento?filter=${filter}`,
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    accept: 'application/json',
-                },
-            }
-        )
+        const response = await axios.get(LOGIC_URL + `evento?filter=${filter}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                accept: 'application/json',
+            },
+        })
         return response.data
     } catch (error) {
         console.error('Error filtering events:', error)
@@ -74,7 +71,9 @@ const filterEvents = async (filter: string): Promise<EventoModel[]> => {
     }
 }
 
-const getParticipantIdByEmail = async (correo: string): Promise<number> => {
+const getParticipantIdByEmail = async (
+    correo: string
+): Promise<{ id: number }[]> => {
     try {
         const response = await axios.get(
             LOGIC_URL +
@@ -93,23 +92,17 @@ const getParticipantIdByEmail = async (correo: string): Promise<number> => {
     }
 }
 
-const inscriptionToEvent = async (
-    inscription : {
-        fecha: Date,
-        eventoId: number,
-        participanteId: number,
-    }
-): Promise<void> => {
+const inscriptionToEvent = async (inscription: {
+    eventoId: number
+    participanteId: number
+}): Promise<void> => {
     try {
-        const response = await axios.post(
-            LOGIC_URL + `inscripcion/` , inscription,
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    accept: 'application/json',
-                },
-            }
-        )
+        const response = await axios.post(LOGIC_URL + `inscripcion/`, inscription, {
+            headers: {
+                'Content-Type': 'application/json',
+                accept: 'application/json',
+            },
+        })
         return response.data
     } catch (error) {
         console.error('Error inscribing to event:', error)
@@ -138,8 +131,51 @@ const editEvent = async (eventData: EventoModel): Promise<EventoModel> => {
 
 const deleteEvent = async (eventId: number): Promise<void> => {
     try {
-        const response = await axios.delete(
-            LOGIC_URL + `evento/${eventId}`,
+        const response = await axios.delete(LOGIC_URL + `evento/${eventId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                accept: 'application/json',
+            },
+        })
+        return response.data
+    } catch (error) {
+        console.error('Error deleting event:', error)
+        throw error
+    }
+}
+
+const isParticipantInEvent = async (
+    participantId: number,
+    eventId: number
+): Promise<boolean> => {
+    try {
+        const response = await axios.get(
+            LOGIC_URL +
+                `inscripcion?filter={"where": {"eventoId": ${eventId}, "participanteId": ${participantId}}}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
+        return response.data.length > 0
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+            return true
+        }
+        console.error('Error getting inscriptions:', error)
+        throw error
+    }
+}
+
+const getInscriptionsToEvent = async (
+    eventId: number
+): Promise<{ count: number }> => {
+    try {
+        const response = await axios.get(
+            LOGIC_URL +
+                `inscripcion?filter={"fields":["id"], "where": {"eventoId": ${eventId}}}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -149,7 +185,7 @@ const deleteEvent = async (eventId: number): Promise<void> => {
         )
         return response.data
     } catch (error) {
-        console.error('Error deleting event:', error)
+        console.error('Error getting inscriptions:', error)
         throw error
     }
 }
@@ -162,7 +198,9 @@ const LogicService = {
     deleteEvent,
     inscriptionToEvent,
     getOrganizerIdByEmail,
+    isParticipantInEvent,
     getParticipantIdByEmail,
+    getInscriptionsToEvent,
 }
 
 export default LogicService

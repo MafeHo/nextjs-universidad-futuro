@@ -6,7 +6,7 @@ import LogicService from 'app/services/logicService'
 import useEventsStore from 'app/stores/useEventsStore'
 import useSecurityStore from 'app/stores/useSecurityStore'
 import { useEffect, useState } from 'react'
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2'
 
 export default function Cards() {
     const { parseToEventApi } = useEventsStore()
@@ -19,32 +19,42 @@ export default function Cards() {
         })
     }, [])
 
+    const getAttendees = (event: EventApi) => {
+        let count = 0
+        LogicService.getInscriptionsToEvent(Number(event.id)).then(
+            (inscriptions) => {
+                count = inscriptions.count
+            }
+        )
+        return count
+    }
+
     const handleInscription = async (event: EventApi) => {
         console.log('Inscribirse al evento:', event.title)
         if (!user) {
             Swal.fire({
-                title: "Acción requerida",
-                text: "Debes iniciar sesión para inscribirte a un evento.",
-                icon: "warning",
+                title: 'Acción requerida',
+                text: 'Debes iniciar sesión para inscribirte a un evento.',
+                icon: 'warning',
                 timer: 3000,
                 timerProgressBar: true,
                 showConfirmButton: false,
                 allowOutsideClick: false,
-              });
-              return;
+            })
+            return
         }
 
         if (!user.correo) {
             Swal.fire({
-                title: "Información faltante",
-                text: "El correo del usuario no está disponible.",
-                icon: "error",
+                title: 'Información faltante',
+                text: 'El correo del usuario no está disponible.',
+                icon: 'error',
                 timer: 3000,
                 timerProgressBar: true,
                 showConfirmButton: false,
                 allowOutsideClick: false,
-              });
-              return;
+            })
+            return
         }
         LogicService.getParticipantIdByEmail(user.correo).then((participante) => {
             console.log('====================================')
@@ -64,15 +74,15 @@ export default function Cards() {
         }
         if (!participantArr || !participantId) {
             Swal.fire({
-                title: "Error",
-                text: "No se encontró el participante.",
-                icon: "error",
+                title: 'Error',
+                text: 'No se encontró el participante.',
+                icon: 'error',
                 timer: 3000,
                 timerProgressBar: true,
                 showConfirmButton: false,
                 allowOutsideClick: false,
-              });
-              return;
+            })
+            return
         }
 
         let inscription = {
@@ -83,14 +93,14 @@ export default function Cards() {
 
         await LogicService.inscriptionToEvent(inscription).then(() => {
             Swal.fire({
-                title: "Inscripción exitosa",
+                title: 'Inscripción exitosa',
                 text: `Te has inscrito al evento: ${event.title}`,
-                icon: "success",
+                icon: 'success',
                 timer: 3000,
                 timerProgressBar: true,
                 showConfirmButton: false,
                 allowOutsideClick: false,
-              });
+            })
         })
     }
 
@@ -109,9 +119,17 @@ export default function Cards() {
                             <p>Descripcion: {event.extendedProps?.description}</p>
                             <p>Lugar: {event.extendedProps?.location}</p>
                             <p>Organizador: {event.extendedProps?.organizer}</p>
-                            <p>Facultad: {event.extendedProps?.faculty}</p>
-                            <p>Temática: {event.extendedProps?.topic}</p>
-                            <p>Tipo de Evento: {event.extendedProps?.eventType}</p>
+                            {event.extendedProps.faculty ? (
+                                <p>Facultad: {event.extendedProps.faculty}</p>
+                            ) : null}
+                            {event.extendedProps.topic ? (
+                                <p>Tematica: {event.extendedProps.topic}</p>
+                            ) : null}
+                            {event.extendedProps.eventType ? (
+                                <p>
+                                    Tipo de Evento: {event.extendedProps.eventType}
+                                </p>
+                            ) : null}
                             <p>
                                 Hora Inicio:{' '}
                                 {event.start
@@ -137,6 +155,13 @@ export default function Cards() {
                                     : 'No especificado'}
                             </p>
                             <p>Cupos Máximos: {event.extendedProps?.maxCapacity}</p>
+                            {event.extendedProps?.maxCapacity ? (
+                                <p>
+                                    Cupos disponibles:
+                                    {event.extendedProps?.maxCapacity -
+                                        getAttendees(event)}
+                                </p>
+                            ) : null}
                         </div>
                         <br />
                         <label className='text-slate-950 dark:text-white'>

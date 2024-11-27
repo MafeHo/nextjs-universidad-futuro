@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
-import { useRouter } from 'next/navigation'
 import UsersService from 'app/services/usersService'
 import EditarUsuario from '../editarUsuarios/EditarUsuarios'
 import { SecurityConfig } from 'app/config/securityConfig'
@@ -16,28 +15,22 @@ const ListarUsuarios: React.FC = () => {
     const { user } = useSecurityStore()
 
     useEffect(() => {
-        const fetchUsuarios = async () => {
-            try {
-                const users = await UsersService.getUsers().then(
-                    async (data: Usuario[]) => {
-                        if (data.length === 0) {
-                            console.log('No trae la información de los usuarios')
-                        } else {
-                            return filterUsersByRole(data)
-                        }
-                    }
-                )
-                if (users) {
-                    console.log('Usuarios:', users)
-                    setUsuarios(users)
-                }
-            } catch (error) {
-                console.error('Error al obtener usuarios:', error)
-            }
-        }
-
         fetchUsuarios()
     }, [])
+
+    const fetchUsuarios = async () => {
+        try {
+            await UsersService.getUsers().then(async (data: Usuario[]) => {
+                if (data.length === 0) {
+                    console.log('No trae la información de los usuarios')
+                } else {
+                    return filterUsersByRole(data)
+                }
+            })
+        } catch (error) {
+            console.error('Error al obtener usuarios:', error)
+        }
+    }
 
     const filterUsersByRole = async (data: Usuario[]) => {
         let users: Usuario[] = []
@@ -57,8 +50,10 @@ const ListarUsuarios: React.FC = () => {
                 users = data.filter((user) => user._id === userId)
                 break
             default:
+                users = []
                 break
         }
+        setUsuarios(users)
         return users
     }
 

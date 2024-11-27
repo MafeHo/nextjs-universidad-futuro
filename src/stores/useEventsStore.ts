@@ -39,6 +39,7 @@ const useEventsStore = create<EventsStore>((set) => ({
                     topic: event.tematica,
                     eventType: event.tipoEvento,
                     maxCapacity: event.cupoInscripcion,
+                    attendees: event.numeroAsistentes,
                 },
             } as unknown as EventApi
 

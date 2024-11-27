@@ -19,7 +19,6 @@ interface CreateEventProps {
         startTime: string
         endTime: string
         maxCapacity: string
-        attendees: string
     }
     setNewEvent: React.Dispatch<
         React.SetStateAction<{
@@ -34,7 +33,6 @@ interface CreateEventProps {
             startTime: string
             endTime: string
             maxCapacity: string
-            attendees: string
         }>
     >
     selectedDate: DateSelectArg | null
@@ -130,6 +128,7 @@ const CreateEvent: React.FC<CreateEventProps> = ({
                             ? organizerArr[0].id
                             : null
                 }
+
                 if (!organizerArr || !organizerId) {
                     Swal.fire({
                         title: 'Error',

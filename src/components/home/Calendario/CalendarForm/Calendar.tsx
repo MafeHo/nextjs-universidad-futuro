@@ -28,7 +28,6 @@ const Calendar: React.FC = () => {
         startTime: '',
         endTime: '',
         maxCapacity: '',
-        attendees: '',
     })
     const [selectedDate, setSelectedDate] = useState<DateSelectArg | null>(null)
     const [calendarView, setCalendarView] = useState<string>('dayGridMonth')
@@ -91,7 +90,6 @@ const Calendar: React.FC = () => {
             startTime: '',
             endTime: '',
             maxCapacity: '',
-            attendees: '',
         })
     }
 

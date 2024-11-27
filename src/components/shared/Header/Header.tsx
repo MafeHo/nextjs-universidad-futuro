@@ -20,17 +20,17 @@ export const Header = () => {
                         <Link
                             href='/events'
                             className='text-white hover:text-blue-500'>
-                            Events
+                            Mis Eventos
                         </Link>
                         <Link
                             href='/contact'
                             className='text-white hover:text-blue-500'>
-                            Contact
+                            Contactanos
                         </Link>
                         <Link
                             href='/aboutus'
                             className='text-white hover:text-blue-500'>
-                            About
+                            Acerca de
                         </Link>
                         <Link
                             href='/calendario'
@@ -44,8 +44,7 @@ export const Header = () => {
                         </Link>
                         <Link
                             href='/dashboard'
-                            className='text-white hover:text-blue-500'
-                        >
+                            className='text-white hover:text-blue-500'>
                             Dashboard
                         </Link>
                         <Link
