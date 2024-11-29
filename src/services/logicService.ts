@@ -144,37 +144,47 @@ const deleteEvent = async (eventId: number): Promise<void> => {
     }
 }
 
-const generateQRCode = async (participanteId : number, eventoId : number) => {
+const generateQRCode = async (participantId: number, eventId: number): Promise<string> => {
     try {
-      const response = await fetch(`/codigo-qr/${participanteId}/${eventoId}`);
-      if (!response.ok) throw new Error('Error al generar el código QR');
-      return await response.json();
+        const response = await axios.post(
+            LOGIC_URL + `codigo-qr/${participantId}/${eventId}`,
+            {},
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        );
+        return response.data.qrCode; // Devuelve el QR en formato base64 desde el backend
     } catch (error) {
-      throw new Error('Error en la generación del QR');
+        console.error('Error generating QR code:', error);
+        throw new Error('Error en la generación del código QR.');
     }
-  };
+};
 
-  const registerAssistance = async (participanteId : number, eventoId : number, qrCode : string) => {
+const registerAssistance = async (data: {
+    participantId: number;
+    eventId: number;
+    qrCode: string;
+}): Promise<void> => {
     try {
-      const response = await fetch(`/api/inscripcion/registrar-asistencia`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          participanteId,
-          eventoId,
-          qrCode,
-        }),
-      });
-      if (!response.ok) throw new Error('Error al registrar la asistencia');
-      return await response.json();
+        const response = await axios.post(
+            LOGIC_URL + `inscripcion/registrar-asistencia`,
+            data,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        );
+        return response.data;
     } catch (error) {
-      throw new Error('Error en el registro de asistencia');
+        console.error('Error registering assistance:', error);
+        throw new Error('Error al registrar la asistencia.');
     }
-  };
-  
-  
+};
 
 
 const isParticipantInEvent = async (

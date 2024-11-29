@@ -22,24 +22,15 @@ export const ListarEventos = () => {
     }, [])
 
     const handleAsistance = async (event: EventApi) => {
-    if (
-      (user?.rolId == SecurityConfig.ID_ROLE_PARTICIPANT ||
-        user?.rolId == SecurityConfig.ID_ROLE_ADMIN) &&
-      user.correo
-    ) {
-      const participantId = await LogicService.getParticipantIdByEmail(
-        user.correo
-      );
-      const eventId = event.id;
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Acceso Denegado',
-        text: 'No eres participante para registrar asistencia.',
-        confirmButtonText: 'Aceptar',
-      });
+        if((user?.roleId == SecurityConfig.ID_ROLE_PARTICIPANT || user?.roleId == SecurityConfig.ID_ROLE_ADMIN) && (user.correo)){
+            
+            const participantId = await LogicService.getParticipantIdByEmail(user.correo)
+            const eventId = event.id
+        }
+        else{
+            alert("No eres participante")
+        }
     }
-  };
 
     return (
         <section className='md:flex mt-5 justify-center items-center gap-6 flex-col'>
