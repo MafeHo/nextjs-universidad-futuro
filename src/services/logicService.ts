@@ -1,3 +1,4 @@
+
 import { LogicConfig } from 'app/config/logicConfig'
 import { EventoModel } from 'app/models/evento.model'
 import axios from 'axios'
@@ -190,6 +191,48 @@ const getInscriptionsToEvent = async (
     }
 }
 
+const generateQRCode = async (participantId: number, eventId: number): Promise<string> => {
+    try {
+        const response = await axios.post(
+            LOGIC_URL + `codigo-qr/${participantId}/${eventId}`,
+            {},
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        );
+        return response.data.qrCode; // Devuelve el QR en formato base64 desde el backend
+    } catch (error) {
+        console.error('Error generating QR code:', error);
+        throw new Error('Error en la generación del código QR.');
+    }
+};
+
+const registerAssistance = async (data: {
+    participantId: number;
+    eventId: number;
+    qrCode: string;
+}): Promise<void> => {
+    try {
+        const response = await axios.post(
+            LOGIC_URL + `inscripcion/registrar-asistencia`,
+            data,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error registering assistance:', error);
+        throw new Error('Error al registrar la asistencia.');
+    }
+};
+
 const LogicService = {
     getEvents,
     createEvent,
@@ -201,6 +244,8 @@ const LogicService = {
     isParticipantInEvent,
     getParticipantIdByEmail,
     getInscriptionsToEvent,
+    generateQRCode,
+    registerAssistance,
 }
 
 export default LogicService

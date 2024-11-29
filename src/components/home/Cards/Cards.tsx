@@ -30,78 +30,96 @@ export default function Cards() {
     }
 
     const handleInscription = async (event: EventApi) => {
-        console.log('Inscribirse al evento:', event.title)
-        if (!user) {
-            Swal.fire({
-                title: 'Acción requerida',
-                text: 'Debes iniciar sesión para inscribirte a un evento.',
-                icon: 'warning',
-                timer: 3000,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                allowOutsideClick: false,
-            })
-            return
-        }
+        try {
+            if (!user) {
+                Swal.fire({
+                    title: 'Acción requerida',
+                    text: 'Debes iniciar sesión para inscribirte a un evento.',
+                    icon: 'warning',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                })
+                return
+            }
 
-        if (!user.correo) {
-            Swal.fire({
-                title: 'Información faltante',
-                text: 'El correo del usuario no está disponible.',
-                icon: 'error',
-                timer: 3000,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                allowOutsideClick: false,
-            })
-            return
-        }
-        LogicService.getParticipantIdByEmail(user.correo).then((participante) => {
-            console.log('====================================')
-            console.log('Participante:', participante)
-            console.log('====================================')
-        })
+            if (!user.correo) {
+                Swal.fire({
+                    title: 'Información faltante',
+                    text: 'El correo del usuario no está disponible.',
+                    icon: 'error',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                })
+                return
+            }
 
-        const participantArr = await LogicService.getParticipantIdByEmail(
-            user.correo
-        )
-        let participantId = null
-        if (participantArr) {
-            participantId =
-                Array.isArray(participantArr) && participantArr.length > 0
-                    ? participantArr[0].id
-                    : null
-        }
-        if (!participantArr || !participantId) {
-            Swal.fire({
-                title: 'Error',
-                text: 'No se encontró el participante.',
-                icon: 'error',
-                timer: 3000,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                allowOutsideClick: false,
-            })
-            return
-        }
+            // Obtener ID del participante
+            const participantArr = await LogicService.getParticipantIdByEmail(user.correo)
+            let participantId = null
+            if (participantArr) {
+                participantId =
+                    Array.isArray(participantArr) && participantArr.length > 0
+                        ? participantArr[0].id
+                        : null
+            }
 
-        let inscription = {
-            fecha: new Date(),
-            eventoId: Number(event.id),
-            participanteId: participantId,
-        }
+            if (!participantId) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se encontró el participante.',
+                    icon: 'error',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                })
+                return
+            }
 
-        await LogicService.inscriptionToEvent(inscription).then(() => {
+            // Crear inscripción
+            const inscription = {
+                fecha: new Date(),
+                eventoId: Number(event.id),
+                participanteId: participantId,
+            }
+
+            await LogicService.inscriptionToEvent(inscription)
+
+            // Generar el código QR
+            const qrCode = await LogicService.generateQRCode(participantId, Number(event.id))
+
+            // Crear un enlace de descarga
+            const link = document.createElement('a')
+            link.href = qrCode
+            link.download = `QR_Evento_${event.title.replace(/\s/g, '_')}.png`
+
+            // Mostrar modal con QR y opción de descarga
             Swal.fire({
                 title: 'Inscripción exitosa',
                 text: `Te has inscrito al evento: ${event.title}`,
-                icon: 'success',
+                imageUrl: qrCode, // Código QR en formato base64
+                imageWidth: 200,
+                imageHeight: 200,
+                imageAlt: 'Código QR',
+                confirmButtonText: 'Cerrar',
+                footer: `<a href="${link.href}" download="${link.download}" style="color: #007BFF;">Descargar QR</a>`,
+            })
+        } catch (error) {
+            console.error('Error en el proceso de inscripción:', error)
+            Swal.fire({
+                title: 'Error',
+                text: 'Ocurrió un error al inscribirte al evento.',
+                icon: 'error',
                 timer: 3000,
                 timerProgressBar: true,
                 showConfirmButton: false,
                 allowOutsideClick: false,
             })
-        })
+        }
     }
 
     return (

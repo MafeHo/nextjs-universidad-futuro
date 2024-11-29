@@ -18,16 +18,40 @@ export const ListarEventos = () => {
   const { user } = useSecurityStore();
   const [events, setEvents] = useState<EventApi[]>([]);
 
-    const handleAsistance = async (event: EventApi) => {
-        if((user?.rolId == SecurityConfig.ID_ROLE_PARTICIPANT || user?.rolId == SecurityConfig.ID_ROLE_ADMIN) && (user.correo)){
-            
-            const participantId = await LogicService.getParticipantIdByEmail(user.correo)
-            const eventId = event.id
-        }
-        else{
-            alert("No eres participante")
-        }
+  const openModal = (event: EventApi) => {
+    setSelectedEvent(event); // Guarda el evento seleccionado
+    setIsModalOpen(true); // Abre el modal
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false); // Cierra el modal
+  };
+
+  useEffect(() => {
+    LogicService.getEvents().then((events) => {
+      setEvents(parseToEventApi(events));
+    });
+  }, []);
+
+  const handleAsistance = async (event: EventApi) => {
+    if (
+      (user?.rolId == SecurityConfig.ID_ROLE_PARTICIPANT ||
+        user?.rolId == SecurityConfig.ID_ROLE_ADMIN) &&
+      user.correo
+    ) {
+      const participantId = await LogicService.getParticipantIdByEmail(
+        user.correo
+      );
+      const eventId = event.id;
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Acceso Denegado',
+        text: 'No eres participante para registrar asistencia.',
+        confirmButtonText: 'Aceptar',
+      });
     }
+  };
 
   const handleEdit = async (event: EventApi) => {
     const { value: formValues } = await Swal.fire({
