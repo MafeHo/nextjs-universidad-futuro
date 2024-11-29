@@ -144,6 +144,39 @@ const deleteEvent = async (eventId: number): Promise<void> => {
     }
 }
 
+const generateQRCode = async (participanteId : number, eventoId : number) => {
+    try {
+      const response = await fetch(`/codigo-qr/${participanteId}/${eventoId}`);
+      if (!response.ok) throw new Error('Error al generar el código QR');
+      return await response.json();
+    } catch (error) {
+      throw new Error('Error en la generación del QR');
+    }
+  };
+
+  const registerAssistance = async (participanteId : number, eventoId : number, qrCode : string) => {
+    try {
+      const response = await fetch(`/api/inscripcion/registrar-asistencia`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          participanteId,
+          eventoId,
+          qrCode,
+        }),
+      });
+      if (!response.ok) throw new Error('Error al registrar la asistencia');
+      return await response.json();
+    } catch (error) {
+      throw new Error('Error en el registro de asistencia');
+    }
+  };
+  
+  
+
+
 const isParticipantInEvent = async (
     participantId: number,
     eventId: number
@@ -201,6 +234,8 @@ const LogicService = {
     isParticipantInEvent,
     getParticipantIdByEmail,
     getInscriptionsToEvent,
+    generateQRCode,
+    registerAssistance,
 }
 
 export default LogicService
