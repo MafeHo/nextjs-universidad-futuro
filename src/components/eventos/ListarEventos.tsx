@@ -19,7 +19,7 @@ export const ListarEventos = () => {
   const [events, setEvents] = useState<EventApi[]>([]);
 
     const handleAsistance = async (event: EventApi) => {
-        if((user?.roleId == SecurityConfig.ID_ROLE_PARTICIPANT || user?.roleId == SecurityConfig.ID_ROLE_ADMIN) && (user.correo)){
+        if((user?.rolId == SecurityConfig.ID_ROLE_PARTICIPANT || user?.rolId == SecurityConfig.ID_ROLE_ADMIN) && (user.correo)){
             
             const participantId = await LogicService.getParticipantIdByEmail(user.correo)
             const eventId = event.id
