@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 
 import { EventApi } from '@fullcalendar/core'
@@ -8,26 +9,49 @@ import useSecurityStore from 'app/stores/useSecurityStore'
 import { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 
-export default function Cards() {
+interface CardsProps {
+    limit?: number
+    defaultImages?: string[]
+}
+
+export default function Cards({ limit, defaultImages }: CardsProps) {
     const { parseToEventApi } = useEventsStore()
     const { user } = useSecurityStore()
     const [events, setEvents] = useState<EventApi[]>([])
 
+    // useEffect(() => {
+    //     LogicService.getEvents().then((events) => {
+    //         setEvents(parseToEventApi(events))
+    //     })
+    // }, [])
+
     useEffect(() => {
         LogicService.getEvents().then((events) => {
-            setEvents(parseToEventApi(events))
-        })
-    }, [])
+            const parsedEvents = parseToEventApi(events)
 
-    const getAttendees = (event: EventApi) => {
-        let count = 0
-        LogicService.getInscriptionsToEvent(Number(event.id)).then(
-            (inscriptions) => {
-                count = inscriptions.count
-            }
-        )
-        return count
-    }
+            // ordena los eventos y usa el limit para mostrar la cantidad de eventos indicado
+            const filteredEvents = limit
+                ? parsedEvents
+                      .sort(
+                          (a, b) =>
+                              new Date(a.start!).getTime() - new Date(b.start!).getTime()
+                      )
+                      .slice(0, limit)
+                : parsedEvents
+
+            setEvents(filteredEvents)
+        })
+    }, [limit, parseToEventApi])
+
+    // const getAttendees = (event: EventApi) => {
+    //     let count = 0
+    //     LogicService.getInscriptionsToEvent(Number(event.id)).then(
+    //         (inscriptions) => {
+    //             count = inscriptions.count
+    //         }
+    //     )
+    //     return count
+    // }
 
     const handleInscription = async (event: EventApi) => {
         try {
@@ -134,10 +158,20 @@ export default function Cards() {
                 {events.length <= 0 && (
                     <p className='italic text-gray-400'>No hay eventos próximos</p>
                 )}
-                {events.map((event) => (
-                    <li
+                {events.map((event, index) => (
+                    
+                    <div
                         key={event.id}
                         className='border border-gray-200 shadow px-4 py-2 rounded-md text-blue-800 dark:text-white bg-white dark:bg-gray-900'>
+                        <img
+                        src={
+                            defaultImages && defaultImages[index % defaultImages.length]
+                                ? defaultImages[index % defaultImages.length]
+                                : event.extendedProps?.image || '/images/placeholder.jpg'
+                        }
+                        alt={event.title}
+                        className="w-full h-60 object-cover rounded-t-md"
+                    />
                         <div className='font-bold'>{event.title}</div>
                         <div className='text-sm text-slate-600 dark:text-white'>
                             <p>Descripcion: {event.extendedProps?.description}</p>
@@ -204,7 +238,7 @@ export default function Cards() {
                                 Inscribirse
                             </button>
                         </div>
-                    </li>
+                    </div>
                 ))}
             </ul>
         </section>
