@@ -108,11 +108,48 @@ const Calendar: React.FC = () => {
         }
     }
 
+    // const handleEventsSet = (newEvents: EventApi[]) => {
+    //     if (JSON.stringify(events) !== JSON.stringify(newEvents)) {
+    //         setEvents(newEvents)
+    //         setCurrentEvents(newEvents)
+    //     }
+    // }
+
     const handleEventsSet = (newEvents: EventApi[]) => {
-        if (JSON.stringify(events) !== JSON.stringify(newEvents)) {
+        if (!areEventsEqual(events, newEvents)) {
             setEvents(newEvents)
             setCurrentEvents(newEvents)
         }
+    }
+
+    const areEventsEqual = (events1: EventApi[], events2: EventApi[]) => {
+        if (events1.length !== events2.length) {
+            return false
+        }
+
+        for (let i = 0; i < events1.length; i++) {
+            if (!isEventEqual(events1[i], events2[i])) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    const isEventEqual = (event1: EventApi, event2: EventApi) => {
+        return (
+            event1.id === event2.id &&
+            event1.title === event2.title &&
+            event1.start?.toISOString() === event2.start?.toISOString() &&
+            event1.end?.toISOString() === event2.end?.toISOString() &&
+            event1.extendedProps.description === event2.extendedProps.description &&
+            event1.extendedProps.location === event2.extendedProps.location &&
+            event1.extendedProps.organizerId === event2.extendedProps.organizerId &&
+            event1.extendedProps.faculty === event2.extendedProps.faculty &&
+            event1.extendedProps.topic === event2.extendedProps.topic &&
+            event1.extendedProps.eventType === event2.extendedProps.eventType &&
+            event1.extendedProps.maxCapacity === event2.extendedProps.maxCapacity
+        )
     }
 
     const startIndex = currentPage * eventsPerPage
@@ -169,54 +206,67 @@ const Calendar: React.FC = () => {
                 : 0,
         }
         await LogicService.editEvent(my_event)
-        console.log('Evento editado:', my_event, event)
+        // console.log('Evento editado:', my_event, event)
+        const updatedEvent: EventApi = {
+            ...event,
+            title: eventEdited.title,
+            extendedProps: {
+                ...eventEdited.extendedProps,
+                description: eventEdited.extendedProps.description,
+                location: eventEdited.extendedProps.location,
+                organizerId: eventEdited.extendedProps?.organizerId || '',
+                organizer: eventEdited.extendedProps?.organizer || '',
+                faculty: eventEdited.extendedProps.faculty,
+                topic: eventEdited.extendedProps.topic,
+                eventType: eventEdited.extendedProps.eventType,
+                maxCapacity: eventEdited.extendedProps.maxCapacity,
+            },
+            start: startDate || null,
+            end: endDate || null,
+        }
+        setEvents((prevEvents) =>
+            prevEvents.map((e) => (e.id === event.id ? updatedEvent : e))
+        )
 
-        // const updatedEvents = [...currentEvents]
+        for (let i = 0; i < events.length; i++) {
+            if (events[i].id === event.id) {
+                events[i] = {
+                    ...events[i],
+                    id: event.id,
+                    title: eventEdited.title,
+                    extendedProps: {
+                        description: eventEdited.extendedProps?.description || '',
+                        location: eventEdited.extendedProps?.location || '',
+                        organizerId: eventEdited.extendedProps?.organizerId || '',
+                        organizer: eventEdited.extendedProps?.organizer || '',
+                        faculty: eventEdited.extendedProps?.faculty || '',
+                        topic: eventEdited.extendedProps?.topic || '',
+                        eventType: eventEdited.extendedProps?.eventType || '',
+                        maxCapacity: eventEdited.extendedProps?.maxCapacity || 0,
+                    },
+                    start: eventEdited.start,
+                    end: eventEdited.end,
+                }
+                break // Salir del bucle una vez encontrado
+            }
+        }
 
-        // for (let i = 0; i < updatedEvents.length; i++) {
-        //     if (updatedEvents[i].id === id) {
-        //         updatedEvents[i] = {
-        //             ...updatedEvents[i],
-        //             id: id,
-        //             title: event.title,
-        //             extendedProps: {
-        //                 description: event.extendedProps?.description || '',
-        //                 location: event.extendedProps?.location || '',
-        //                 organizerId: event.extendedProps?.organizerId || '',
-        //                 faculty: event.extendedProps?.faculty || '',
-        //                 topic: event.extendedProps?.topic || '',
-        //                 eventType: event.extendedProps?.eventType || '',
-        //                 maxCapacity: event.extendedProps?.maxCapacity || 0,
-        //             },
-        //             start: event.start,
-        //             end: event.end,
-        //         }
-        //         break // Salir del bucle una vez encontrado
-        //     }
-        // }
+        // Transformar los eventos a un modelo simple
+        const updatedEventoModels = events.map((e) => ({
+            id: Number(e.id),
+            titulo: e.title,
+            descripcion: e.extendedProps?.description || '',
+            lugar: e.extendedProps?.location || '',
+            organizerId: e.extendedProps?.organizerId || '',
+            facultad: e.extendedProps?.faculty || '',
+            tematica: e.extendedProps?.topic || '',
+            tipoEvento: e.extendedProps?.eventType || '',
+            fechaInicio: e.start ? new Date(e.start).toISOString() : '',
+            fechaFinal: e.end ? new Date(e.end).toISOString() : '',
+            cupoInscripcion: e.extendedProps?.maxCapacity || 0,
+        }))
 
-        // // Actualizar el estado con la copia modificada
-        // setTimeout(() => {
-        //     setCurrentEvents(updatedEvents)
-        //     setEvents(updatedEvents)
-        // }, 1000)
-
-        // // Transformar los eventos a un modelo simple
-        // const updatedEventoModels = updatedEvents.map((e) => ({
-        //     id: Number(e.id),
-        //     titulo: e.title,
-        //     descripcion: e.extendedProps?.description || '',
-        //     lugar: e.extendedProps?.location || '',
-        //     organizadorId: e.extendedProps?.organizerId || '',
-        //     facultad: e.extendedProps?.faculty || '',
-        //     tematica: e.extendedProps?.topic || '',
-        //     tipoEvento: e.extendedProps?.eventType || '',
-        //     fechaInicio: e.start ? new Date(e.start).toISOString() : '',
-        //     fechaFinal: e.end ? new Date(e.end).toISOString() : '',
-        //     cupoInscripcion: e.extendedProps?.maxCapacity || 0,
-        // }))
-
-        // setMyEvents(updatedEventoModels)
+        setMyEvents(updatedEventoModels)
     }
 
     const handleDeleteEvent = async (event: EventApi) => {

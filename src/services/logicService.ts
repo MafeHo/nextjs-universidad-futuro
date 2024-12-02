@@ -1,4 +1,3 @@
-
 import { LogicConfig } from 'app/config/logicConfig'
 import { EventoModel } from 'app/models/evento.model'
 import axios from 'axios'
@@ -190,7 +189,10 @@ const getInscriptionsToEvent = async (
     }
 }
 
-const generateQRCode = async (participantId: number, eventId: number): Promise<string> => {
+const generateQRCode = async (
+    participantId: number,
+    eventId: number
+): Promise<string> => {
     try {
         const response = await axios.post(
             LOGIC_URL + `codigo-qr/${participantId}/${eventId}`,
@@ -201,18 +203,18 @@ const generateQRCode = async (participantId: number, eventId: number): Promise<s
                     accept: 'application/json',
                 },
             }
-        );
-        return response.data.qrCode; // Devuelve el QR en formato base64 desde el backend
+        )
+        return response.data.qrCode // Devuelve el QR en formato base64 desde el backend
     } catch (error) {
-        console.error('Error generating QR code:', error);
-        throw new Error('Error en la generación del código QR.');
+        console.error('Error generating QR code:', error)
+        throw new Error('Error en la generación del código QR.')
     }
-};
+}
 
 const registerAssistance = async (data: {
-    participantId: number;
-    eventId: number;
-    qrCode: string;
+    participantId: number
+    eventId: number
+    qrCode: string
 }): Promise<void> => {
     try {
         const response = await axios.post(
@@ -224,13 +226,13 @@ const registerAssistance = async (data: {
                     accept: 'application/json',
                 },
             }
-        );
-        return response.data;
+        )
+        return response.data
     } catch (error) {
-        console.error('Error registering assistance:', error);
-        throw new Error('Error al registrar la asistencia.');
+        console.error('Error registering assistance:', error)
+        throw new Error('Error al registrar la asistencia.')
     }
-};
+}
 
 const getEventsByOrganizerEmail = async (correo: string): Promise<EventoModel[]> => {
     try {
@@ -239,7 +241,7 @@ const getEventsByOrganizerEmail = async (correo: string): Promise<EventoModel[]>
                 const organizadorId = response[0]?.id || null
                 return await axios.get(
                     LOGIC_URL +
-                        `evento?filter={"where": {"organizadorId": ${organizadorId}}}`,
+                        `evento?filter={"where": {"organizadorId": ${organizadorId}},"include": [ {"relation": "organizador"}]}`,
                     {
                         headers: {
                             'Content-Type': 'application/json',
@@ -265,7 +267,7 @@ const getEventsByParticipantEmail = async (
                 const participanteId = response[0]?.id || null
                 return await axios.get(
                     LOGIC_URL +
-                        `inscripcion?filter={"where": {"participanteId": ${participanteId}}}`,
+                        `inscripcion?filter={"where": {"participanteId": ${participanteId}}, "include": [ {"relation": "organizador"}]}`,
                     {
                         headers: {
                             'Content-Type': 'application/json',

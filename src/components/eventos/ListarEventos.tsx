@@ -28,6 +28,20 @@ export const ListarEventos = () => {
   };
 
   useEffect(() => {
+    if (!user) {
+      Swal.fire({
+          icon: 'error',
+          title: 'Por favor inicia sesion. Acceso Denegado',
+          text: 'No has iniciado sesión.',
+          confirmButtonText: 'Aceptar',
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+      })
+      return;
+    }
+
     if (user?.rolId == SecurityConfig.ID_ROLE_ADMIN) {
       // LogicService.getEvents().then((events) => {
       //   setEvents(parseToEventApi(events))

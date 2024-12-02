@@ -58,7 +58,9 @@ export default function Cards() {
             }
 
             // Obtener ID del participante
-            const participantArr = await LogicService.getParticipantIdByEmail(user.correo)
+            const participantArr = await LogicService.getParticipantIdByEmail(
+                user.correo
+            )
             let participantId = null
             if (participantArr) {
                 participantId =
@@ -90,7 +92,10 @@ export default function Cards() {
             await LogicService.inscriptionToEvent(inscription)
 
             // Generar el código QR
-            const qrCode = await LogicService.generateQRCode(participantId, Number(event.id))
+            const qrCode = await LogicService.generateQRCode(
+                participantId,
+                Number(event.id)
+            )
 
             // Crear un enlace de descarga
             const link = document.createElement('a')
@@ -103,6 +108,7 @@ export default function Cards() {
                 text: `Te has inscrito al evento: ${event.title}`,
                 imageUrl: qrCode, // Código QR en formato base64
                 imageWidth: 200,
+                icon: 'success',
                 imageHeight: 200,
                 imageAlt: 'Código QR',
                 confirmButtonText: 'Cerrar',
