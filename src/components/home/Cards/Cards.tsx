@@ -155,13 +155,13 @@ export default function Cards() {
                                     : 'No especificado'}
                             </p>
                             <p>Cupos Máximos: {event.extendedProps?.maxCapacity}</p>
-                            {event.extendedProps?.maxCapacity ? (
+                            {/* {event.extendedProps?.maxCapacity ? (
                                 <p>
                                     Cupos disponibles:
                                     {event.extendedProps?.maxCapacity -
                                         getAttendees(event)}
                                 </p>
-                            ) : null}
+                            ) : null} */}
                         </div>
                         <br />
                         <label className='text-slate-950 dark:text-white'>

@@ -134,7 +134,6 @@ const Calendar: React.FC = () => {
     }
 
     const handleEditEvent = async (event: EventApi, eventEdited: EventApi) => {
-        const id = event.id
         let startDate: Date | undefined
         if (event.start && eventEdited.start) {
             startDate = new Date(event.start)
@@ -221,34 +220,28 @@ const Calendar: React.FC = () => {
     }
 
     const handleDeleteEvent = async (event: EventApi) => {
-        if (
-            window.confirm(
-                `Are you sure you want to delete the event "${event.title}"?`
-            )
-        ) {
-            try {
-                await LogicService.deleteEvent(Number(event.id))
-                const updatedEvents = currentEvents.filter((e) => e.id !== event.id)
-                setCurrentEvents(updatedEvents)
-                setEvents(updatedEvents)
-                const updatedEventoModels = updatedEvents.map((event) => ({
-                    id: Number(event.id),
-                    titulo: event.title,
-                    descripcion: event.extendedProps.description,
-                    lugar: event.extendedProps.location,
-                    organizadorId: event.extendedProps.organizerId,
-                    facultad: event.extendedProps.faculty,
-                    tematica: event.extendedProps.topic,
-                    tipoEvento: event.extendedProps.eventType,
-                    fechaInicio: event.start ? event.start.toISOString() : '',
-                    fechaFinal: event.end ? event.end.toISOString() : '',
-                    cupoInscripcion: event.extendedProps.maxCapacity,
-                }))
-                setMyEvents(updatedEventoModels)
-                console.log(`Event "${event.title}" deleted successfully.`)
-            } catch (error) {
-                console.error('Error deleting event:', error)
-            }
+        try {
+            await LogicService.deleteEvent(Number(event.id))
+            const updatedEvents = currentEvents.filter((e) => e.id !== event.id)
+            setCurrentEvents(updatedEvents)
+            setEvents(updatedEvents)
+            const updatedEventoModels = updatedEvents.map((event) => ({
+                id: Number(event.id),
+                titulo: event.title,
+                descripcion: event.extendedProps.description,
+                lugar: event.extendedProps.location,
+                organizadorId: event.extendedProps.organizerId,
+                facultad: event.extendedProps.faculty,
+                tematica: event.extendedProps.topic,
+                tipoEvento: event.extendedProps.eventType,
+                fechaInicio: event.start ? event.start.toISOString() : '',
+                fechaFinal: event.end ? event.end.toISOString() : '',
+                cupoInscripcion: event.extendedProps.maxCapacity,
+            }))
+            setMyEvents(updatedEventoModels)
+            console.log(`Event "${event.title}" deleted successfully.`)
+        } catch (error) {
+            console.error('Error deleting event:', error)
         }
     }
 

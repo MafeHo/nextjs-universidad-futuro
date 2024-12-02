@@ -273,7 +273,11 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
     const handleDelete = async () => {
         const result = await Swal.fire({
             title: '¿Estás seguro?',
-            text: 'Esta acción no se puede deshacer.',
+            text:
+                'Estas seguro que deseas eliminar el evento ' +
+                event.title +
+                '. ' +
+                'Esta acción no se puede deshacer.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -450,14 +454,14 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
                     })}
                 </p>
                 <p>Cupos Máximos: {event.extendedProps.maxCapacity}</p>
-                {event.extendedProps.attendees &&
+                {/* {event.extendedProps.attendees &&
                 event.extendedProps?.maxCapacity ? (
                     <p>
                         Cupos disponibles:
                         {event.extendedProps?.maxCapacity -
                             event.extendedProps?.attendees}
                     </p>
-                ) : null}
+                ) : null} */}
             </div>
 
             {

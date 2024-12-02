@@ -174,8 +174,7 @@ const getInscriptionsToEvent = async (
 ): Promise<{ count: number }> => {
     try {
         const response = await axios.get(
-            LOGIC_URL +
-                `inscripcion?filter={"fields":["id"], "where": {"eventoId": ${eventId}}}`,
+            LOGIC_URL + `inscripcion/count?where: {"eventoId": ${eventId}}}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -186,6 +185,56 @@ const getInscriptionsToEvent = async (
         return response.data
     } catch (error) {
         console.error('Error getting inscriptions:', error)
+        throw error
+    }
+}
+
+const getEventsByOrganizerEmail = async (correo: string): Promise<EventoModel[]> => {
+    try {
+        const response = await getOrganizerIdByEmail(correo).then(
+            async (response) => {
+                const organizadorId = response[0]?.id || null
+                return await axios.get(
+                    LOGIC_URL +
+                        `evento?filter={"where": {"organizadorId": ${organizadorId}}}`,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            accept: 'application/json',
+                        },
+                    }
+                )
+            }
+        )
+        return response.data
+    } catch (error) {
+        console.error('Error getting events by organizer:', error)
+        throw error
+    }
+}
+
+const getEventsByParticipantEmail = async (
+    correo: string
+): Promise<EventoModel[]> => {
+    try {
+        const response = await getParticipantIdByEmail(correo).then(
+            async (response) => {
+                const participanteId = response[0]?.id || null
+                return await axios.get(
+                    LOGIC_URL +
+                        `inscripcion?filter={"where": {"participanteId": ${participanteId}}}`,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            accept: 'application/json',
+                        },
+                    }
+                )
+            }
+        )
+        return response.data
+    } catch (error) {
+        console.error('Error getting events by participant:', error)
         throw error
     }
 }
@@ -201,6 +250,8 @@ const LogicService = {
     isParticipantInEvent,
     getParticipantIdByEmail,
     getInscriptionsToEvent,
+    getEventsByOrganizerEmail,
+    getEventsByParticipantEmail,
 }
 
 export default LogicService

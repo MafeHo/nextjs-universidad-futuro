@@ -180,13 +180,13 @@ const ListarUsuarios: React.FC = () => {
                                         {usuario.primerApellido}
                                     </td>
                                     <td className='border border-gray-300 px-4 py-2 text-sm  '>
-                                        {usuario.celular || 'N/A'}
+                                        {usuario.celular ?? 'N/A'}
                                     </td>
                                     <td className='border border-gray-300 px-4 py-2 text-sm'>
                                         {usuario.correo}
                                     </td>
                                     <td className='border border-gray-300 px-4 py-2 text-sm  md:table-cell'>
-                                        {usuario.rol.nombre}
+                                        {usuario.rol?.nombre ?? ''}
                                     </td>
                                     <td className='border border-gray-300 px-4 py-2 text-sm flex gap-2 justify-center'>
                                         <button

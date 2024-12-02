@@ -28,9 +28,28 @@ export const ListarEventos = () => {
   };
 
   useEffect(() => {
-    LogicService.getEvents().then((events) => {
-      setEvents(parseToEventApi(events));
-    });
+    if (user?.rolId == SecurityConfig.ID_ROLE_ADMIN) {
+      // LogicService.getEvents().then((events) => {
+      //   setEvents(parseToEventApi(events))
+      // });
+      if (user.correo) {
+        LogicService.getEventsByOrganizerEmail(user.correo).then((events) => {
+            setEvents(parseToEventApi(events))
+        });
+      }
+
+    } else if (user?.rolId == SecurityConfig.ID_ROLE_ORGANIZER && user.correo) {
+      // Obtener los eventos de ese organizador
+      LogicService.getEventsByOrganizerEmail(user.correo).then((events) => {
+        setEvents(parseToEventApi(events));
+      });
+    } else if (user?.rolId == SecurityConfig.ID_ROLE_PARTICIPANT && user.correo) {
+      // Obtener los eventos que ese participante inscribio
+      LogicService.getEventsByParticipantEmail(user.correo).then((events) => {
+        setEvents(parseToEventApi(events));
+      });
+    }
+
   }, []);
 
   const handleAsistance = async (event: EventApi) => {
@@ -239,14 +258,14 @@ export const ListarEventos = () => {
                                   : 'No especificado'}
                           </p>
                           <p>Cupos Máximos: {event.extendedProps?.maxCapacity}</p>
-                          {event.extendedProps?.attendees &&
+                          {/* {event.extendedProps?.attendees &&
                           event.extendedProps?.maxCapacity ? (
                               <p>
                                   Cupos disponibles:
                                   {event.extendedProps?.maxCapacity -
                                       event.extendedProps?.attendees}
                               </p>
-                          ) : null}
+                          ) : null} */}
                       </div>
                       <br />
                       <label className='text-slate-950 dark:text-white'>
