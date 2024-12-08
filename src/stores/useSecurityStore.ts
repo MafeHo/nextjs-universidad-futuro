@@ -15,10 +15,15 @@ interface SecurityStore {
 const useSecurityStore = create<SecurityStore>()(
     persist(
         (set) => ({
-            user: null,
+            user: localStorage.getItem('securityStore')
+                ? JSON.parse(localStorage.getItem('securityStore') as string).user
+                : null,
             setUser: (user: UsuarioModel) => set({ user }),
             removeUser: () => set({ user: null }),
-            sessionData: null,
+            sessionData: localStorage.getItem('securityStore')
+                ? JSON.parse(localStorage.getItem('securityStore') as string)
+                      .sessionData
+                : null,
             setSessionData: (sessionData: TwoFactorResponseModel) =>
                 set({ sessionData }),
             removeSessionData: () => set({ sessionData: null }),

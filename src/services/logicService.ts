@@ -262,23 +262,44 @@ const getEventsByParticipantEmail = async (
     correo: string
 ): Promise<EventoModel[]> => {
     try {
-        const response = await getParticipantIdByEmail(correo).then(
-            async (response) => {
-                const participanteId = response[0]?.id || null
-                return await axios.get(
-                    LOGIC_URL +
-                        `inscripcion?filter={"where": {"participanteId": ${participanteId}}, "include": [ {"relation": "organizador"}]}`,
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            accept: 'application/json',
-                        },
-                    }
-                )
+        let participanteId = null
+        await getParticipantIdByEmail(correo).then((response) => {
+            participanteId = response[0]?.id || null
+        })
+        const second_response = await axios.get(
+            LOGIC_URL +
+                `http://localhost:3000/inscripcion?filter={
+                            "where": {"participanteId":  ${participanteId}},
+                            "include": [
+                                {
+                                "relation": "evento",
+                                "scope": {
+                                    "include":[{"relation":"organizador"}]
+                                }
+                                },
+                                {"relation": "feedback"}
+                            ]
+                            }`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
             }
         )
-        return response.data
+
+        if (second_response.status === 404) {
+            return []
+        }
+
+        if (second_response.data.length === 0) {
+            return []
+        }
+        return second_response.data
     } catch (error) {
+        console.log('====================================')
+        console.log(error)
+        console.log('====================================')
         console.error('Error getting events by participant:', error)
         throw error
     }
