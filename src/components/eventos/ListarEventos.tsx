@@ -17,13 +17,15 @@ export const ListarEventos = () => {
 
     const { setMyEvents, parseToEventApi } = useEventsStore()
 
-    let isOrganizer = false
-    let isParticipant = false
+    const [isOrganizer, setIsOrganizer] = useState(false)
+    const [isParticipant, setIsParticipant] = useState(false)
 
     const { user } = useSecurityStore()
     const [events, setEvents] = useState<EventApi[]>([])
 
     const [inscriptions, setInscriptions] = useState<Inscripcion[]>([])
+    const [inscriptionId, setInscriptionId] = useState<number | undefined>()
+    const [feedback, setFeedback] = useState<number | undefined>()
 
     const openModal = (event: EventApi) => {
         setSelectedEvent(event) // Guarda el evento seleccionado
@@ -62,7 +64,6 @@ export const ListarEventos = () => {
             // LogicService.getEvents().then((events) => {
             //   setEvents(parseToEventApi(events))
             // });
-            isParticipant = true
             if (user.correo) {
                 // LogicService.getEventsByOrganizerEmail(user.correo).then(
                 //     (events) => {
@@ -74,20 +75,24 @@ export const ListarEventos = () => {
                         setInscriptions(inscriptions)
                     }
                 )
+                setIsOrganizer(false)
+                setIsParticipant(true)
             }
         } else if (user?.rolId == SecurityConfig.ID_ROLE_ORGANIZER && user.correo) {
             // Obtener los eventos de ese organizador
             LogicService.getEventsByOrganizerEmail(user.correo).then((events) => {
                 setEvents(parseToEventApi(events))
             })
-            isOrganizer = true
+            setIsOrganizer(true)
+            setIsParticipant(false)
         } else if (
             user?.rolId == SecurityConfig.ID_ROLE_PARTICIPANT &&
             user.correo
         ) {
-            isParticipant = true
             // Obtener los eventos que ese participante inscribio
             loadParticipant()
+            setIsParticipant(true)
+            setIsOrganizer(false)
         }
     }, [])
 
@@ -586,17 +591,20 @@ export const ListarEventos = () => {
                                     }}>
                                     Registrar Asistencia
                                 </button>
-                                <button
-                                    className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center mt-2'
-                                    onClick={() => {
-                                        const event = parseToEventApi([
-                                            inscription.evento,
-                                        ])[0]
-                                        openModal(event)
-                                    }} // Llama a la función y pasa el evento seleccionado
-                                >
-                                    Encuesta
-                                </button>
+                                {!feedback && !inscription.feedbackId && (
+                                    <button
+                                        className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center mt-2'
+                                        onClick={() => {
+                                            const event = parseToEventApi([
+                                                inscription.evento,
+                                            ])[0]
+                                            openModal(event)
+                                            setInscriptionId(inscription.id)
+                                        }} // Llama a la función y pasa el evento seleccionado
+                                    >
+                                        Encuesta
+                                    </button>
+                                )}
                             </div>
                             <div className='mt-4 flex justify-center space-x-4'>
                                 <button
@@ -604,7 +612,7 @@ export const ListarEventos = () => {
                                     onClick={() =>
                                         handleDeleteIncription(inscription.id)
                                     }>
-                                    Eliminar
+                                    Cancelar inscripcion
                                 </button>
                             </div>
                         </li>
@@ -618,8 +626,7 @@ export const ListarEventos = () => {
         <section className='md:flex mt-5 mx-5 justify-center items-center gap-6 flex-col'>
             <h3 className=''>Mis eventos</h3>
             <ul className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10 md:mt-0'>
-                {organizerList()}
-                {participantList()}
+                {organizerList() || participantList() || <p>No hay eventos</p>}
             </ul>
             {isModalOpen && (
                 <div
@@ -654,7 +661,13 @@ export const ListarEventos = () => {
                         </div>
 
                         {/* Formulario */}
-                        <FormSatisfaccion closeModal={closeModal} />
+                        {inscriptionId && (
+                            <FormSatisfaccion
+                                closeModal={closeModal}
+                                inscriptionId={inscriptionId}
+                                setFeedback={setFeedback}
+                            />
+                        )}
                     </div>
                 </div>
             )}

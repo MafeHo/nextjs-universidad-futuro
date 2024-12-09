@@ -1,5 +1,6 @@
 import { LogicConfig } from 'app/config/logicConfig'
 import { EventoModel } from 'app/models/evento.model'
+import { Feedback } from 'app/models/feedback.model'
 import { Inscripcion } from 'app/models/inscripcion.model'
 import axios from 'axios'
 
@@ -323,6 +324,89 @@ const deleteInscription = async (inscription: number): Promise<void> => {
     }
 }
 
+const createFeedback = async (feedbackData: Feedback): Promise<Feedback> => {
+    try {
+        const response = await axios.post(LOGIC_URL + `feedback/`, feedbackData, {
+            headers: {
+                'Content-Type': 'application/json',
+                accept: 'application/json',
+            },
+        })
+        return response.data
+    } catch (error) {
+        console.error('Error creating feedback:', error)
+        throw error
+    }
+}
+
+const getLastSixMothsEvents = async (): Promise<number> => {
+    try {
+        const response = await axios.get(
+            LOGIC_URL +
+                `evento/count?where={"fechaFinal": {"gte": "${new Date(
+                    new Date().setMonth(new Date().getMonth() - 6)
+                ).toISOString()}"}}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
+        return response.data.count
+    } catch (error) {
+        console.error('Error getting last six months events:', error)
+        throw error
+    }
+}
+
+const getLastSixMothsAttendants = async (): Promise<number> => {
+    try {
+        const response = await axios.get(
+            LOGIC_URL +
+                `inscripcion/count?where={"createdAt": {"gte": "${new Date(
+                    new Date().setMonth(new Date().getMonth() - 6)
+                ).toISOString()}"}}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
+        return response.data.count
+    } catch (error) {
+        console.error('Error getting last six months attendants:', error)
+        throw error
+    }
+}
+
+const getAverageSatisfaction = async (): Promise<number> => {
+    try {
+        const response = await axios.get(LOGIC_URL + `feedback/`, {
+            headers: {
+                'Content-Type': 'application/json',
+                accept: 'application/json',
+            },
+        })
+
+        const totalFeedbacks = response.data.length
+        const total = response.data.reduce(
+            (acc: number, feedback: Feedback) =>
+                acc +
+                ((feedback.organizationQuality ?? 0) +
+                    (feedback.contentQuality ?? 0) +
+                    (feedback.overallEventRating ?? 0) / 3),
+            0
+        )
+        const averageSatisfaction = totalFeedbacks > 0 ? total / totalFeedbacks : 0
+        return Math.round(averageSatisfaction * 100) / 100
+    } catch (error) {
+        console.error('Error getting average satisfaction:', error)
+        throw error
+    }
+}
+
 const LogicService = {
     getEvents,
     createEvent,
@@ -339,6 +423,10 @@ const LogicService = {
     getEventsByOrganizerEmail,
     getEventsByParticipantEmail,
     deleteInscription,
+    createFeedback,
+    getLastSixMothsEvents,
+    getLastSixMothsAttendants,
+    getAverageSatisfaction,
 }
 
 export default LogicService
