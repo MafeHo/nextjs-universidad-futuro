@@ -9,6 +9,7 @@ import useSecurityStore from 'app/stores/useSecurityStore'
 import { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import { FormSatisfaccion } from 'app/components/satisfaccion/FormSatisfaccion/FormSatisfaccion'
+import { Inscripcion } from 'app/models/inscripcion.model'
 
 export const ListarEventos = () => {
     const [isModalOpen, setIsModalOpen] = useState(false) // Para abrir/cerrar el modal
@@ -16,8 +17,13 @@ export const ListarEventos = () => {
 
     const { setMyEvents, parseToEventApi } = useEventsStore()
 
+    let isOrganizer = false
+    let isParticipant = false
+
     const { user } = useSecurityStore()
     const [events, setEvents] = useState<EventApi[]>([])
+
+    const [inscriptions, setInscriptions] = useState<Inscripcion[]>([])
 
     const openModal = (event: EventApi) => {
         setSelectedEvent(event) // Guarda el evento seleccionado
@@ -28,29 +34,12 @@ export const ListarEventos = () => {
         setIsModalOpen(false) // Cierra el modal
     }
 
-    const loadParticipant = async (user: any) => {
-        try {
-            await LogicService.getEventsByParticipantEmail(user.correo).then(
-                (events) => {
-                    setEvents(parseToEventApi(events))
-                }
+    const loadParticipant = async () => {
+        if (user?.correo) {
+            let inscriptions = await LogicService.getEventsByParticipantEmail(
+                user.correo
             )
-        } catch (e) {
-            if ((e as any).response?.status === 404) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'No hay eventos inscritos',
-                    text: 'No tienes eventos inscritos.',
-                    confirmButtonText: 'Aceptar',
-                })
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error al cargar eventos',
-                    text: 'Ocurrió un error al cargar los eventos.',
-                    confirmButtonText: 'Aceptar',
-                })
-            }
+            setInscriptions(inscriptions)
         }
     }
 
@@ -73,15 +62,16 @@ export const ListarEventos = () => {
             // LogicService.getEvents().then((events) => {
             //   setEvents(parseToEventApi(events))
             // });
+            isParticipant = true
             if (user.correo) {
-                LogicService.getEventsByOrganizerEmail(user.correo).then(
-                    (events) => {
-                        setEvents(parseToEventApi(events))
-                    }
-                )
+                // LogicService.getEventsByOrganizerEmail(user.correo).then(
+                //     (events) => {
+                //         setEvents(parseToEventApi(events))
+                //     }
+                // )
                 LogicService.getEventsByParticipantEmail(user.correo).then(
-                    (events) => {
-                        setEvents(parseToEventApi(events))
+                    (inscriptions) => {
+                        setInscriptions(inscriptions)
                     }
                 )
             }
@@ -90,16 +80,18 @@ export const ListarEventos = () => {
             LogicService.getEventsByOrganizerEmail(user.correo).then((events) => {
                 setEvents(parseToEventApi(events))
             })
+            isOrganizer = true
         } else if (
             user?.rolId == SecurityConfig.ID_ROLE_PARTICIPANT &&
             user.correo
         ) {
+            isParticipant = true
             // Obtener los eventos que ese participante inscribio
-            loadParticipant(user)
+            loadParticipant()
         }
     }, [])
 
-    const handleAsistance = async (event: EventApi) => {
+    const handleAsistance = async (eventId: number) => {
         if (
             (user?.rolId == SecurityConfig.ID_ROLE_PARTICIPANT ||
                 user?.rolId == SecurityConfig.ID_ROLE_ADMIN) &&
@@ -108,7 +100,7 @@ export const ListarEventos = () => {
             const participantId = await LogicService.getParticipantIdByEmail(
                 user.correo
             )
-            const eventId = event.id
+            // const eventId = event.id
         } else {
             Swal.fire({
                 icon: 'error',
@@ -314,6 +306,31 @@ export const ListarEventos = () => {
         }
     }
 
+    const handleDeleteIncription = async (id: number) => {
+        const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'No, cancelar',
+        })
+
+        if (result.isConfirmed) {
+            try {
+                await LogicService.deleteInscription(id)
+                const updatedInscriptions = inscriptions.filter((i) => i.id !== id)
+                setInscriptions(updatedInscriptions)
+                console.log(`Inscription "${id}" deleted successfully.`)
+            } catch (error) {
+                console.error('Error deleting inscription:', error)
+            }
+            Swal.fire('Eliminado', 'La inscripción ha sido eliminada.', 'success')
+        }
+    }
+
     const handleDelete = async (event: EventApi) => {
         const result = await Swal.fire({
             title: '¿Estás seguro?',
@@ -369,59 +386,66 @@ export const ListarEventos = () => {
         })
     }
 
-    return (
-        <section className='md:flex mt-5 mx-5 justify-center items-center gap-6 flex-col'>
-            <h3 className=''>Mis eventos</h3>
-            <ul className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10 md:mt-0'>
-                {events.length <= 0 && (
-                    <p className='italic text-gray-400'>No hay eventos próximos</p>
-                )}
-                {events.map((event) => (
-                    <li
-                        key={event.id}
-                        className='border border-gray-200 shadow px-4 py-2 rounded-md text-blue-800 dark:text-white bg-white dark:bg-gray-900'>
-                        <div className='font-bold'>{event.title}</div>
-                        <div className='text-sm text-slate-600 dark:text-white'>
-                            <p>Descripcion: {event.extendedProps?.description}</p>
-                            <p>Lugar: {event.extendedProps?.location}</p>
-                            <p>Organizador: {event.extendedProps?.organizer}</p>
-                            {event.extendedProps.faculty ? (
-                                <p>Facultad: {event.extendedProps.faculty}</p>
-                            ) : null}
-                            {event.extendedProps.topic ? (
-                                <p>Tematica: {event.extendedProps.topic}</p>
-                            ) : null}
-                            {event.extendedProps.eventType ? (
+    const organizerList = () => {
+        return (
+            isOrganizer && (
+                <div>
+                    {events.length <= 0 && (
+                        <p className='italic text-gray-400'>
+                            No hay eventos próximos
+                        </p>
+                    )}
+                    {events.map((event) => (
+                        <li
+                            key={event.id}
+                            className='border border-gray-200 shadow px-4 py-2 rounded-md text-blue-800 dark:text-white bg-white dark:bg-gray-900'>
+                            <div className='font-bold'>{event.title}</div>
+                            <div className='text-sm text-slate-600 dark:text-white'>
                                 <p>
-                                    Tipo de Evento: {event.extendedProps.eventType}
+                                    Descripcion: {event.extendedProps?.description}
                                 </p>
-                            ) : null}
-                            <p>
-                                Hora Inicio:{' '}
-                                {event.start
-                                    ? new Date(event.start).toLocaleTimeString(
-                                          'es-ES',
-                                          {
-                                              hour: '2-digit',
-                                              minute: '2-digit',
-                                          }
-                                      )
-                                    : 'No especificado'}
-                            </p>
-                            <p>
-                                Hora Fin:{' '}
-                                {event.end
-                                    ? new Date(event.end).toLocaleTimeString(
-                                          'es-ES',
-                                          {
-                                              hour: '2-digit',
-                                              minute: '2-digit',
-                                          }
-                                      )
-                                    : 'No especificado'}
-                            </p>
-                            <p>Cupos Máximos: {event.extendedProps?.maxCapacity}</p>
-                            {/* {event.extendedProps?.attendees &&
+                                <p>Lugar: {event.extendedProps?.location}</p>
+                                <p>Organizador: {event.extendedProps?.organizer}</p>
+                                {event.extendedProps.faculty ? (
+                                    <p>Facultad: {event.extendedProps.faculty}</p>
+                                ) : null}
+                                {event.extendedProps.topic ? (
+                                    <p>Tematica: {event.extendedProps.topic}</p>
+                                ) : null}
+                                {event.extendedProps.eventType ? (
+                                    <p>
+                                        Tipo de Evento:{' '}
+                                        {event.extendedProps.eventType}
+                                    </p>
+                                ) : null}
+                                <p>
+                                    Hora Inicio:{' '}
+                                    {event.start
+                                        ? new Date(event.start).toLocaleTimeString(
+                                              'es-ES',
+                                              {
+                                                  hour: '2-digit',
+                                                  minute: '2-digit',
+                                              }
+                                          )
+                                        : 'No especificado'}
+                                </p>
+                                <p>
+                                    Hora Fin:{' '}
+                                    {event.end
+                                        ? new Date(event.end).toLocaleTimeString(
+                                              'es-ES',
+                                              {
+                                                  hour: '2-digit',
+                                                  minute: '2-digit',
+                                              }
+                                          )
+                                        : 'No especificado'}
+                                </p>
+                                <p>
+                                    Cupos Máximos: {event.extendedProps?.maxCapacity}
+                                </p>
+                                {/* {event.extendedProps?.attendees &&
                           event.extendedProps?.maxCapacity ? (
                               <p>
                                   Cupos disponibles:
@@ -429,49 +453,173 @@ export const ListarEventos = () => {
                                       event.extendedProps?.attendees}
                               </p>
                           ) : null} */}
-                        </div>
-                        <br />
-                        <label className='text-slate-950 dark:text-white'>
-                            {formatDate(event.start!, {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric',
-                            })}
-                        </label>
-                        <div className='mt-4'>
-                            <button
-                                className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center'
-                                onClick={() => {
-                                    handleAsistance(event)
-                                }}>
-                                Registrar Asistencia
-                            </button>
-                            <button
-                                className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center mt-2'
-                                onClick={() => openModal(event)} // Llama a la función y pasa el evento seleccionado
-                            >
-                                Encuesta
-                            </button>
-                        </div>
-                        <div className='mt-4 flex justify-center space-x-4'>
-                            <button
-                                className='p-2 bg-green-500 hover:bg-green-400 text-white rounded-md'
-                                onClick={() => handleReminder()}>
-                                Recordatorio
-                            </button>
-                            <button
-                                className='p-2 bg-blue-500 hover:bg-blue-400 text-white rounded-md'
-                                onClick={() => handleEdit(event)}>
-                                Editar
-                            </button>
-                            <button
-                                className='p-2 bg-red-600 hover:bg-red-500 text-white rounded-md'
-                                onClick={() => handleDelete(event)}>
-                                Eliminar
-                            </button>
-                        </div>
-                    </li>
-                ))}
+                            </div>
+                            <br />
+                            <label className='text-slate-950 dark:text-white'>
+                                {formatDate(event.start!, {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric',
+                                })}
+                            </label>
+                            {/* <div className='mt-4'>
+                                <button
+                                    className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center'
+                                    onClick={() => {
+                                        handleAsistance(Number(event.id))
+                                    }}>
+                                    Registrar Asistencia
+                                </button>
+                                <button
+                                    className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center mt-2'
+                                    onClick={() => openModal(event)} // Llama a la función y pasa el evento seleccionado
+                                >
+                                    Encuesta
+                                </button>
+                            </div> */}
+                            <div className='mt-4 flex justify-center space-x-4'>
+                                <button
+                                    className='p-2 bg-green-500 hover:bg-green-400 text-white rounded-md'
+                                    onClick={() => handleReminder()}>
+                                    Recordatorio
+                                </button>
+                                <button
+                                    className='p-2 bg-blue-500 hover:bg-blue-400 text-white rounded-md'
+                                    onClick={() => handleEdit(event)}>
+                                    Editar
+                                </button>
+                                <button
+                                    className='p-2 bg-red-600 hover:bg-red-500 text-white rounded-md'
+                                    onClick={() => handleDelete(event)}>
+                                    Eliminar
+                                </button>
+                            </div>
+                        </li>
+                    ))}
+                </div>
+            )
+        )
+    }
+
+    const participantList = () => {
+        return (
+            isParticipant && (
+                <>
+                    {inscriptions.length <= 0 && (
+                        <p className='italic text-gray-400'>
+                            No hay eventos próximos
+                        </p>
+                    )}
+                    {inscriptions.map((inscription) => (
+                        <li
+                            key={inscription.evento.id}
+                            className='border border-gray-200 shadow px-4 py-2 rounded-md text-blue-800 dark:text-white bg-white dark:bg-gray-900'>
+                            <div className='font-bold'>
+                                {inscription.evento.titulo}
+                            </div>
+                            <div className='text-sm text-slate-600 dark:text-white'>
+                                <p>Descripcion: {inscription.evento.descripcion}</p>
+                                <p>Lugar: {inscription.evento.lugar}</p>
+                                <p>
+                                    Organizador:{' '}
+                                    {inscription.evento.organizador?.primerNombre &&
+                                    inscription.evento.organizador?.primerApellido
+                                        ? `${inscription.evento.organizador.primerNombre} ${inscription.evento.organizador.primerApellido}`
+                                        : 'No especificado'}
+                                    {inscription.evento.organizador?.correo
+                                        ? ` - ${inscription.evento.organizador.correo}`
+                                        : ''}
+                                </p>
+                                {inscription.evento.facultad ? (
+                                    <p>Facultad: {inscription.evento.facultad}</p>
+                                ) : null}
+                                {inscription.evento.tematica ? (
+                                    <p>Tematica: {inscription.evento.tematica}</p>
+                                ) : null}
+                                {inscription.evento.tipoEvento ? (
+                                    <p>
+                                        Tipo de Evento:{' '}
+                                        {inscription.evento.tipoEvento}
+                                    </p>
+                                ) : null}
+                                <p>
+                                    Hora Inicio:{' '}
+                                    {inscription.evento.fechaInicio
+                                        ? new Date(
+                                              inscription.evento.fechaInicio
+                                          ).toLocaleTimeString('es-ES', {
+                                              hour: '2-digit',
+                                              minute: '2-digit',
+                                          })
+                                        : 'No especificado'}
+                                </p>
+                                <p>
+                                    Hora Fin:{' '}
+                                    {inscription.evento.fechaFinal
+                                        ? new Date(
+                                              inscription.evento.fechaFinal
+                                          ).toLocaleTimeString('es-ES', {
+                                              hour: '2-digit',
+                                              minute: '2-digit',
+                                          })
+                                        : 'No especificado'}
+                                </p>
+                                <p>
+                                    Cupos Máximos:{' '}
+                                    {inscription.evento.cupoInscripcion}
+                                </p>
+                            </div>
+                            <br />
+                            <label className='text-slate-950 dark:text-white'>
+                                {formatDate(inscription.evento.fechaInicio!, {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric',
+                                })}
+                            </label>
+                            <div className='mt-4'>
+                                <button
+                                    className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center'
+                                    onClick={() => {
+                                        inscription.evento.id &&
+                                            handleAsistance(inscription.evento.id)
+                                    }}>
+                                    Registrar Asistencia
+                                </button>
+                                <button
+                                    className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center mt-2'
+                                    onClick={() => {
+                                        const event = parseToEventApi([
+                                            inscription.evento,
+                                        ])[0]
+                                        openModal(event)
+                                    }} // Llama a la función y pasa el evento seleccionado
+                                >
+                                    Encuesta
+                                </button>
+                            </div>
+                            <div className='mt-4 flex justify-center space-x-4'>
+                                <button
+                                    className='p-2 bg-red-600 hover:bg-red-500 text-white rounded-md'
+                                    onClick={() =>
+                                        handleDeleteIncription(inscription.id)
+                                    }>
+                                    Eliminar
+                                </button>
+                            </div>
+                        </li>
+                    ))}
+                </>
+            )
+        )
+    }
+
+    return (
+        <section className='md:flex mt-5 mx-5 justify-center items-center gap-6 flex-col'>
+            <h3 className=''>Mis eventos</h3>
+            <ul className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10 md:mt-0'>
+                {organizerList()}
+                {participantList()}
             </ul>
             {isModalOpen && (
                 <div

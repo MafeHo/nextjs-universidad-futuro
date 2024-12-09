@@ -1,5 +1,6 @@
 import { LogicConfig } from 'app/config/logicConfig'
 import { EventoModel } from 'app/models/evento.model'
+import { Inscripcion } from 'app/models/inscripcion.model'
 import axios from 'axios'
 
 const LOGIC_URL = LogicConfig.LOGIC_URL
@@ -260,7 +261,7 @@ const getEventsByOrganizerEmail = async (correo: string): Promise<EventoModel[]>
 
 const getEventsByParticipantEmail = async (
     correo: string
-): Promise<EventoModel[]> => {
+): Promise<Inscripcion[]> => {
     try {
         let participanteId = null
         await getParticipantIdByEmail(correo).then((response) => {
@@ -268,7 +269,7 @@ const getEventsByParticipantEmail = async (
         })
         const second_response = await axios.get(
             LOGIC_URL +
-                `http://localhost:3000/inscripcion?filter={
+                `inscripcion?filter={
                             "where": {"participanteId":  ${participanteId}},
                             "include": [
                                 {
@@ -287,7 +288,6 @@ const getEventsByParticipantEmail = async (
                 },
             }
         )
-
         if (second_response.status === 404) {
             return []
         }
@@ -301,6 +301,24 @@ const getEventsByParticipantEmail = async (
         console.log(error)
         console.log('====================================')
         console.error('Error getting events by participant:', error)
+        throw error
+    }
+}
+
+const deleteInscription = async (inscription: number): Promise<void> => {
+    try {
+        const response = await axios.delete(
+            LOGIC_URL + `inscripcion/${inscription}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        console.error('Error deleting inscription:', error)
         throw error
     }
 }
@@ -320,6 +338,7 @@ const LogicService = {
     registerAssistance,
     getEventsByOrganizerEmail,
     getEventsByParticipantEmail,
+    deleteInscription,
 }
 
 export default LogicService
