@@ -408,17 +408,31 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
     }
 
     // Función para manejar el envío de recordatorio
-    const handleReminder = () => {
+    const handleReminder = async (event: EventApi) => {
         // Aquí puedes añadir validaciones si es necesario
-        Swal.fire({
-            title: 'Recordatorio enviado',
-            text: 'El recordatorio se ha enviado a todos los inscritos.',
-            icon: 'success',
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            allowOutsideClick: false,
-        })
+        try {
+            await LogicService.sendReminder(Number(event.id))
+            Swal.fire({
+                title: 'Recordatorio enviado',
+                text: 'El recordatorio se ha enviado a todos los inscritos.',
+                icon: 'success',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+            })
+        } catch (error) {
+            console.error('Error sending reminder:', error)
+            Swal.fire({
+                title: 'Error al enviar el recordatorio',
+                text: 'Por favor intenta de nuevo.',
+                icon: 'error',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+            })
+        }
     }
 
     return (
@@ -489,7 +503,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
                 <div className='mt-4 flex justify-center space-x-4'>
                     <button
                         className='p-2 bg-green-500 hover:bg-green-400 text-white rounded-md'
-                        onClick={handleReminder}>
+                        onClick={() => handleReminder(event)}>
                         Recordatorio
                     </button>
                     <button

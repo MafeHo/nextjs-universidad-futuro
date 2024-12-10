@@ -66,9 +66,9 @@ const Dashboard = () => {
                 <AttendanceChart />
                 <EventBar />
             </div>
-            <div className='mt-4'>
+            {/* <div className='mt-4'>
                 <EventTable />
-            </div>
+            </div> */}
         </div>
     )
 }

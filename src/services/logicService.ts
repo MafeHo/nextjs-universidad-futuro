@@ -407,6 +407,82 @@ const getAverageSatisfaction = async (): Promise<number> => {
     }
 }
 
+const getAttendanceBySpecificMonth = async (
+    month: number
+): Promise<{ count: number }> => {
+    try {
+        const currentDate = new Date()
+        const startDate = new Date(
+            currentDate.getFullYear() - (month === 12 ? 1 : 0),
+            month != 12 ? month - 1 : 12,
+            1
+        ).toISOString() // Primer día del mes del año pasado
+        const endDate = new Date(
+            currentDate.getFullYear(),
+            month != 12 ? month - 1 : 12,
+            0,
+            23,
+            59,
+            59,
+            999
+        ).toISOString() // Último día del mes del año pasado
+
+        const response = await axios.get(
+            LOGIC_URL +
+                `inscripcion/count?where={
+                "and": [
+                {"fecha": {"gte": "${startDate}"}},
+                {"fecha": {"lt": "${endDate}"}}
+                ]
+                }`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        console.error('Error getting attendance by specific month:', error)
+        throw error
+    }
+}
+
+const sendReminder = async (eventId: number): Promise<void> => {
+    try {
+        const response = await axios.post(LOGIC_URL + `Recordatorio/`, eventId, {
+            headers: {
+                'Content-Type': 'application/json',
+                accept: 'application/json',
+            },
+        })
+        return response.data
+    } catch (error) {
+        console.error('Error sending reminder:', error)
+        throw error
+    }
+}
+
+const validateQR = async (eventId: number, qrCode: string): Promise<boolean> => {
+    try {
+        const response = await axios.post(
+            LOGIC_URL + `codigo-qr/validar/${eventId}`,
+            qrCode,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                },
+            }
+        )
+        return response.data
+    } catch (error) {
+        console.error('Error validating QR code:', error)
+        throw error
+    }
+}
+
 const LogicService = {
     getEvents,
     createEvent,
@@ -427,6 +503,9 @@ const LogicService = {
     getLastSixMothsEvents,
     getLastSixMothsAttendants,
     getAverageSatisfaction,
+    getAttendanceBySpecificMonth,
+    sendReminder,
+    validateQR,
 }
 
 export default LogicService

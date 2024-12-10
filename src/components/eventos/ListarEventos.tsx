@@ -102,9 +102,39 @@ export const ListarEventos = () => {
                 user?.rolId == SecurityConfig.ID_ROLE_ADMIN) &&
             user.correo
         ) {
-            const participantId = await LogicService.getParticipantIdByEmail(
-                user.correo
-            )
+            const { value: formValues } = await Swal.fire({
+                title: 'Validar QR',
+                html: `
+                <label for="swal-input1" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Código QR</label>
+                <input id="swal-input1" class="border border-gray-300 rounded px-7 py-2 mb-4" value="" placeholder="Codigo" />
+                    `,
+
+                focusConfirm: false,
+                preConfirm: () => {
+                    const codigo = (
+                        document.getElementById('swal-input1') as HTMLInputElement
+                    ).value
+
+                    if (!codigo) {
+                        Swal.showValidationMessage('El codigo es requeridos')
+                        return false
+                    }
+
+                    return {
+                        codigo,
+                    }
+                },
+            })
+
+            if (formValues) {
+                await LogicService.validateQR(eventId, user.correo)
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Asistencia Registrada',
+                    text: 'La asistencia ha sido registrada correctamente.',
+                    confirmButtonText: 'Aceptar',
+                })
+            }
             // const eventId = event.id
         } else {
             Swal.fire({
@@ -378,17 +408,31 @@ export const ListarEventos = () => {
     }
 
     // Función para manejar el envío de recordatorio
-    const handleReminder = () => {
+    const handleReminder = async (event: EventApi) => {
         // Aquí puedes añadir validaciones si es necesario
-        Swal.fire({
-            title: 'Recordatorio enviado',
-            text: 'El recordatorio se ha enviado a todos los inscritos.',
-            icon: 'success',
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            allowOutsideClick: false,
-        })
+        try {
+            await LogicService.sendReminder(Number(event.id))
+            Swal.fire({
+                title: 'Recordatorio enviado',
+                text: 'El recordatorio se ha enviado a todos los inscritos.',
+                icon: 'success',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+            })
+        } catch (error) {
+            console.error('Error sending reminder:', error)
+            Swal.fire({
+                title: 'Error al enviar el recordatorio',
+                text: 'Por favor intenta de nuevo.',
+                icon: 'error',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+            })
+        }
     }
 
     const organizerList = () => {
@@ -485,7 +529,7 @@ export const ListarEventos = () => {
                             <div className='mt-4 flex justify-center space-x-4'>
                                 <button
                                     className='p-2 bg-green-500 hover:bg-green-400 text-white rounded-md'
-                                    onClick={() => handleReminder()}>
+                                    onClick={() => handleReminder(event)}>
                                     Recordatorio
                                 </button>
                                 <button

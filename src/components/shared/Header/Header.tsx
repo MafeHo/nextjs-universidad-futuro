@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { DarkMode } from '../DarkMode'
 import useSecurityStore from 'app/stores/useSecurityStore'
 import { HamburgerMenu } from 'app/components/HamburgerMenu/HamburgerMenu'
+import { SecurityConfig } from 'app/config/securityConfig'
 
 export const Header = () => {
     const { user, removeUser } = useSecurityStore()
@@ -15,7 +16,9 @@ export const Header = () => {
                         UNF
                     </div>
                     <nav className='hidden md:flex space-x-12 pl-12'>
-                        <Link href='/' className='text-white dark:hover:text-blue-500 hover:text-gray-200'>
+                        <Link
+                            href='/'
+                            className='text-white dark:hover:text-blue-500 hover:text-gray-200'>
                             Inicio
                         </Link>
                         <Link
@@ -38,16 +41,18 @@ export const Header = () => {
                             className='text-white dark:hover:text-blue-500 hover:text-gray-200'>
                             Calendario
                         </Link>
-                        <Link
+                        {/* <Link
                             href='/eventBarChart'
                             className='text-white dark:hover:text-blue-500 hover:text-gray-200'>
                             Gráficas
-                        </Link>
-                        <Link
-                            href='/dashboard'
-                            className='text-white dark:hover:text-blue-500 hover:text-gray-200'>
-                            Dashboard
-                        </Link>
+                        </Link> */}
+                        {user && user.rolId === SecurityConfig.ID_ROLE_ADMIN && (
+                            <Link
+                                href='/dashboard'
+                                className='text-white dark:hover:text-blue-500 hover:text-gray-200'>
+                                Dashboard
+                            </Link>
+                        )}
                         <Link
                             href='/listarUsuarios'
                             className='text-white dark:hover:text-blue-500 hover:text-gray-200'>
@@ -99,16 +104,18 @@ export const Header = () => {
             </header>
 
             {/* Header for small screens */}
-            <header className="md:hidden flex items-center justify-between w-full h-16 bg-blue-600 pr-8 dark:bg-blue-950 fixed z-50">
-        <div className="flex items-center text-white">
-          <div className="text-xl font-bold bg-black dark:bg-gray-700 h-16 px-8 pt-4">UNF</div>
-        </div>
+            <header className='md:hidden flex items-center justify-between w-full h-16 bg-blue-600 pr-8 dark:bg-blue-950 fixed z-50'>
+                <div className='flex items-center text-white'>
+                    <div className='text-xl font-bold bg-black dark:bg-gray-700 h-16 px-8 pt-4'>
+                        UNF
+                    </div>
+                </div>
 
-        <div className="flex items-center space-x-4">
-          <DarkMode />
-          <HamburgerMenu />
-        </div>
-      </header>
-    </>
-  );
+                <div className='flex items-center space-x-4'>
+                    <DarkMode />
+                    <HamburgerMenu />
+                </div>
+            </header>
+        </>
+    )
 }
