@@ -34,7 +34,8 @@ export default function Cards({ limit, defaultImages }: CardsProps) {
                 ? parsedEvents
                       .sort(
                           (a, b) =>
-                              new Date(a.start!).getTime() - new Date(b.start!).getTime()
+                              new Date(a.start!).getTime() -
+                              new Date(b.start!).getTime()
                       )
                       .slice(0, limit)
                 : parsedEvents
@@ -57,13 +58,18 @@ export default function Cards({ limit, defaultImages }: CardsProps) {
         try {
             if (!user) {
                 Swal.fire({
-                    title: 'Acción requerida',
-                    text: 'Debes iniciar sesión para inscribirte a un evento.',
+                    title: 'Por favor inicia sesión',
+                    text: 'Debes iniciar sesión para inscribirte en un evento.',
                     icon: 'warning',
-                    timer: 3000,
-                    timerProgressBar: true,
-                    showConfirmButton: false,
-                    allowOutsideClick: false,
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Iniciar sesión',
+                    cancelButtonText: 'Cancelar',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/login'
+                    }
                 })
                 return
             }
@@ -106,37 +112,109 @@ export default function Cards({ limit, defaultImages }: CardsProps) {
                 return
             }
 
-            // Crear inscripción
-            const inscription = {
-                fecha: new Date(),
-                eventoId: Number(event.id),
-                participanteId: participantId,
+            if (!participantId) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se encontró el participante.',
+                    icon: 'error',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                })
+                return
             }
 
+            const attendees = await LogicService.getInscriptionsToEvent(
+                Number(event.id)
+            )
+
+            if (event.extendedProps.maxCapacity === attendees) {
+                Swal.fire({
+                    title: 'Cupos llenos',
+                    text: 'No hay cupos disponibles para este evento.',
+                    icon: 'error',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                })
+                return
+            }
+
+            const eventId = Number(event.id)
+
+            if (await LogicService.isParticipantInEvent(participantId, eventId)) {
+                Swal.fire({
+                    title: 'Ya inscrito',
+                    text: 'Ya estás inscrito en este evento.',
+                    icon: 'info',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                })
+                return
+            }
+
+            const organizerArr = await LogicService.getOrganizerIdByEmail(
+                user.correo
+            )
+            let organizerId = null
+            if (organizerArr) {
+                organizerId =
+                    Array.isArray(organizerArr) && organizerArr.length > 0
+                        ? organizerArr[0].id
+                        : null
+            }
+
+            if (event.extendedProps.organizadorId === organizerId) {
+                Swal.fire({
+                    title: 'Organizador',
+                    text: 'Eres el organizador de este evento.',
+                    icon: 'info',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                })
+                return
+            }
+
+            if (!eventId) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se encontró el evento.',
+                    icon: 'error',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                })
+                return
+            }
+
+            const inscription = {
+                eventoId: eventId,
+                participanteId: participantId,
+            }
             await LogicService.inscriptionToEvent(inscription)
 
-            // Generar el código QR
             const qrCode = await LogicService.generateQRCode(
                 participantId,
                 Number(event.id)
             )
 
-            // Crear un enlace de descarga
-            const link = document.createElement('a')
-            link.href = qrCode
-            link.download = `QR_Evento_${event.title.replace(/\s/g, '_')}.png`
-
             // Mostrar modal con QR y opción de descarga
             Swal.fire({
-                title: 'Inscripción exitosa',
-                text: `Te has inscrito al evento: ${event.title}`,
-                imageUrl: qrCode, // Código QR en formato base64
-                imageWidth: 200,
+                title: 'Inscripción confirmada',
+                text: `Te has inscrito en el evento: ${event.title} \n <br/>  QR ${qrCode}`,
                 icon: 'success',
-                imageHeight: 200,
-                imageAlt: 'Código QR',
+                timer: 3000, // Tiempo de cierre automático (3 segundos)
+                timerProgressBar: true, // Muestra la barra de progreso
+                // showConfirmButton: false, // Oculta el botón de confirmación
                 confirmButtonText: 'Cerrar',
-                footer: `<a href="${link.href}" download="${link.download}" style="color: #007BFF;">Descargar QR</a>`,
+                allowOutsideClick: false, // Impide cerrar haciendo clic fuera
             })
         } catch (error) {
             console.error('Error en el proceso de inscripción:', error)
@@ -159,19 +237,20 @@ export default function Cards({ limit, defaultImages }: CardsProps) {
                     <p className='italic text-gray-400'>No hay eventos próximos</p>
                 )}
                 {events.map((event, index) => (
-                    
                     <div
                         key={event.id}
                         className='border border-gray-200 shadow px-4 py-2 rounded-md text-blue-800 dark:text-white bg-white dark:bg-gray-900'>
                         <img
-                        src={
-                            defaultImages && defaultImages[index % defaultImages.length]
-                                ? defaultImages[index % defaultImages.length]
-                                : event.extendedProps?.image || '/images/placeholder.jpg'
-                        }
-                        alt={event.title}
-                        className="w-full h-60 object-cover rounded-t-md"
-                    />
+                            src={
+                                defaultImages &&
+                                defaultImages[index % defaultImages.length]
+                                    ? defaultImages[index % defaultImages.length]
+                                    : event.extendedProps?.image ||
+                                      '/images/placeholder.jpg'
+                            }
+                            alt={event.title}
+                            className='w-full h-60 object-cover rounded-t-md'
+                        />
                         <div className='font-bold'>{event.title}</div>
                         <div className='text-sm text-slate-600 dark:text-white'>
                             <p>Descripcion: {event.extendedProps?.description}</p>

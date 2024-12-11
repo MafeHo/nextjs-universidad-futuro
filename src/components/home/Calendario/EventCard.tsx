@@ -337,7 +337,9 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
             return
         }
 
-        if (event.extendedProps.maxCapacity === event.extendedProps.attendees) {
+        const attendees = await LogicService.getInscriptionsToEvent(Number(event.id))
+
+        if (event.extendedProps.maxCapacity === attendees) {
             Swal.fire({
                 title: 'Cupos llenos',
                 text: 'No hay cupos disponibles para este evento.',
@@ -365,18 +367,18 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
             return
         }
 
-        // if (event.extendedProps.organizadorId === organizerId) {
-        //     Swal.fire({
-        //         title: 'Organizador',
-        //         text: 'Eres el organizador de este evento.',
-        //         icon: 'info',
-        //         timer: 3000,
-        //         timerProgressBar: true,
-        //         showConfirmButton: false,
-        //         allowOutsideClick: false,
-        //     })
-        //     return
-        // }
+        if (event.extendedProps.organizadorId === organizerId) {
+            Swal.fire({
+                title: 'Organizador',
+                text: 'Eres el organizador de este evento.',
+                icon: 'info',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+            })
+            return
+        }
 
         if (!eventId) {
             Swal.fire({
@@ -396,13 +398,21 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
             participanteId: participantId,
         }
         await LogicService.inscriptionToEvent(inscription)
+
+        const qrCode = await LogicService.generateQRCode(
+            participantId,
+            Number(event.id)
+        )
+
+        // Mostrar modal con QR y opción de descarga
         Swal.fire({
             title: 'Inscripción confirmada',
-            text: `Te has inscrito en el evento: ${event.title}`,
+            text: `Te has inscrito en el evento: ${event.title} \n <br/>  QR ${qrCode}`,
             icon: 'success',
             timer: 3000, // Tiempo de cierre automático (3 segundos)
             timerProgressBar: true, // Muestra la barra de progreso
-            showConfirmButton: false, // Oculta el botón de confirmación
+            // showConfirmButton: false, // Oculta el botón de confirmación
+            confirmButtonText: 'Cerrar',
             allowOutsideClick: false, // Impide cerrar haciendo clic fuera
         })
     }

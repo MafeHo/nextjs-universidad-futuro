@@ -26,6 +26,7 @@ export const ListarEventos = () => {
     const [inscriptions, setInscriptions] = useState<Inscripcion[]>([])
     const [inscriptionId, setInscriptionId] = useState<number | undefined>()
     const [feedback, setFeedback] = useState<number | undefined>()
+    const [asistencia, setAsistencia] = useState<boolean | undefined>()
 
     const openModal = (event: EventApi) => {
         setSelectedEvent(event) // Guarda el evento seleccionado
@@ -127,16 +128,28 @@ export const ListarEventos = () => {
             })
 
             if (formValues) {
-                await LogicService.validateQR(eventId, user.correo)
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Asistencia Registrada',
-                    text: 'La asistencia ha sido registrada correctamente.',
-                    confirmButtonText: 'Aceptar',
-                })
+                const res = await LogicService.validateQR(eventId, formValues.codigo)
+                if (res.isValid) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Asistencia Registrada',
+                        text: 'La asistencia ha sido registrada correctamente.',
+                        confirmButtonText: 'Aceptar',
+                    })
+                    setAsistencia(true)
+                    return
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Código Invalido',
+                        text: 'El código no es valido.',
+                        confirmButtonText: 'Aceptar',
+                    })
+                }
             }
             // const eventId = event.id
         } else {
+            setAsistencia(false)
             Swal.fire({
                 icon: 'error',
                 title: 'Acceso Denegado',
@@ -144,6 +157,7 @@ export const ListarEventos = () => {
                 confirmButtonText: 'Aceptar',
             })
         }
+        setAsistencia(false)
     }
 
     const handleEdit = async (event: EventApi) => {
@@ -627,14 +641,18 @@ export const ListarEventos = () => {
                                 })}
                             </label>
                             <div className='mt-4'>
-                                <button
-                                    className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center'
-                                    onClick={() => {
-                                        inscription.evento.id &&
-                                            handleAsistance(inscription.evento.id)
-                                    }}>
-                                    Registrar Asistencia
-                                </button>
+                                {!asistencia && !inscription.asistencia && (
+                                    <button
+                                        className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center'
+                                        onClick={() => {
+                                            inscription.evento.id &&
+                                                handleAsistance(
+                                                    inscription.evento.id
+                                                )
+                                        }}>
+                                        Registrar Asistencia
+                                    </button>
+                                )}
                                 {!feedback && !inscription.feedbackId && (
                                     <button
                                         className='w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-md text-center mt-2'

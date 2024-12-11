@@ -114,8 +114,8 @@ const inscriptionToEvent = async (inscription: {
 
 const editEvent = async (eventData: EventoModel): Promise<EventoModel> => {
     try {
-        const response = await axios.put(
-            LOGIC_URL + `evento/${eventData.id}`,
+        const response = await axios.patch(
+            LOGIC_URL + `CambioEvento/${eventData.id}`,
             eventData,
             {
                 headers: {
@@ -464,11 +464,17 @@ const sendReminder = async (eventId: number): Promise<void> => {
     }
 }
 
-const validateQR = async (eventId: number, qrCode: string): Promise<boolean> => {
+const validateQR = async (
+    eventId: number,
+    qrCode: string
+): Promise<{
+    isValid: true
+    message: 'string'
+}> => {
     try {
         const response = await axios.post(
             LOGIC_URL + `codigo-qr/validar/${eventId}`,
-            qrCode,
+            { qrCode: qrCode },
             {
                 headers: {
                     'Content-Type': 'application/json',
