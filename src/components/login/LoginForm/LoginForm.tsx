@@ -113,14 +113,14 @@ export const LoginForm = () => {
                         </button>
                     </div>
 
-                    <div className='text-center'>
+                    {/* <div className='text-center'>
                         <button
                             type='button'
                             onClick={handleForgotPasswordClick}
                             className='text-white dark:text-gray-300'>
                             ¿Olvidaste tu contraseña?
                         </button>
-                    </div>
+                    </div> */}
                 </form>
 
                 <p className='text-center text-gray-600 dark:text-gray-300 mt-4'>
